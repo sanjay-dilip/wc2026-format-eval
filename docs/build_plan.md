@@ -1,7 +1,8 @@
 # Build Plan — 2026 World Cup Format Evaluation
 
-Status as of this writing: Build 0 in progress. No Snowflake object exists yet.
-No GitHub repo pushed yet (instructions given, execution pending, per last session).
+Status as of this writing: Build 0 complete, Build 1 in progress
+(`docs/problem_statement.md`, `docs/architecture.md`). No Snowflake object
+exists yet — that starts at Build 2.
 
 **Sequencing note, stated once here rather than per-build**: primary Snowflake
 account credits expire soon. Builds 2–4 (ingestion, validation, core model) are
