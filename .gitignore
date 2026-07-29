@@ -1,0 +1,11 @@
+.env
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+
+# 3.7MB, full historical corpus, not 2026-specific, easily re-fetched.
+# Decision recorded in docs/decision_log.md — keep the fetch script,
+# don't commit the blob.
+data/raw/international_results_full.csv
