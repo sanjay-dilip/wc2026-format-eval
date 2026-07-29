@@ -9,3 +9,7 @@ Thumbs.db
 # Decision recorded in docs/decision_log.md — keep the fetch script,
 # don't commit the blob.
 data/raw/international_results_full.csv
+
+# Local-only session state — helps new sessions pick up where the last one
+# left off; not meant to be a public/shared project artifact.
+CONTEXT.md
