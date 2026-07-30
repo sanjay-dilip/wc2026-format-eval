@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS CORE.DIM_CONFEDERATION (
+    confederation_id NUMBER PRIMARY KEY,
+    confederation_name VARCHAR NOT NULL
+);
