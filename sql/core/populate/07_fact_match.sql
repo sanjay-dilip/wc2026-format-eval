@@ -18,7 +18,11 @@ SELECT
 FROM RAW.MATCH m
 JOIN CORE.DIM_DATE d ON d.full_date = m.match_date
 JOIN CORE.DIM_STAGE s ON s.stage_name = m.stage
-JOIN CORE.DIM_VENUE v ON v.city = m.venue_city AND v.country = m.venue_country
+-- "Dallas" -> "Arlington" normalization matches 05_dim_venue.sql - same
+-- physical stadium, see docs/decision_log.md (2026-07-30 entry).
+JOIN CORE.DIM_VENUE v
+    ON v.city = CASE WHEN m.venue_city = 'Dallas' THEN 'Arlington' ELSE m.venue_city END
+   AND v.country = m.venue_country
 JOIN CORE.DIM_TEAM ht ON ht.team_name = m.home_team
 JOIN CORE.DIM_TEAM at ON at.team_name = m.away_team
 LEFT JOIN RAW.SHOOTOUT sh
