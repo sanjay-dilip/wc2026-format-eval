@@ -19,6 +19,7 @@ MATCH_SOURCE_PATH = REPO_ROOT / "data" / "processed" / "wc2026_stage_mapping.csv
 SHOOTOUT_SOURCE_PATH = REPO_ROOT / "data" / "raw" / "shootouts_full.csv"
 GROUP_DRAW_SOURCE_PATH = REPO_ROOT / "data" / "raw" / "wc2026_group_draw.csv"
 CONFEDERATION_SOURCE_PATH = REPO_ROOT / "data" / "raw" / "wc2026_confederation_map.csv"
+VENUE_COORDINATES_SOURCE_PATH = REPO_ROOT / "data" / "raw" / "wc2026_venue_coordinates.csv"
 
 
 @dataclass(frozen=True)

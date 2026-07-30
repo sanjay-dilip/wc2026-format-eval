@@ -1,6 +1,6 @@
 """Load the 2026 match subset, the full shootout history, the group draw
-crosswalk, and the confederation crosswalk into RAW, and record one
-AUDIT.LOAD_LOG row per file loaded.
+crosswalk, the confederation crosswalk, and the venue coordinates into
+RAW, and record one AUDIT.LOAD_LOG row per file loaded.
 
 Each load truncates its target table first: COPY INTO ... FORCE = TRUE is
 not idempotent on its own (it re-appends the same rows on every re-run,
@@ -28,6 +28,7 @@ from config import (
     GROUP_DRAW_SOURCE_PATH,
     MATCH_SOURCE_PATH,
     SHOOTOUT_SOURCE_PATH,
+    VENUE_COORDINATES_SOURCE_PATH,
     load_snowflake_config,
 )
 from src.ingestion.connect import get_connection
@@ -87,6 +88,7 @@ def main() -> None:
         load_file(cursor, SHOOTOUT_SOURCE_PATH, "RAW.SHOOTOUT", cfg.warehouse)
         load_file(cursor, GROUP_DRAW_SOURCE_PATH, "RAW.GROUP_DRAW", cfg.warehouse)
         load_file(cursor, CONFEDERATION_SOURCE_PATH, "RAW.TEAM_CONFEDERATION", cfg.warehouse)
+        load_file(cursor, VENUE_COORDINATES_SOURCE_PATH, "RAW.VENUE_COORDINATES", cfg.warehouse)
         conn.commit()
     finally:
         conn.close()
