@@ -1,5 +1,36 @@
 # Decision Log — 2026 World Cup Format Evaluation
 
+## 2026-07-30 — dim_venue double-counted Arlington/Dallas as separate venues
+
+**Decision**: Normalize `venue_city = 'Dallas'` to `'Arlington'` in the
+`CORE` population layer only (`sql/core/populate/05_dim_venue.sql` and the
+`fact_match` join in `07_fact_match.sql`). `RAW.MATCH` is left untouched.
+
+**Why**: Found while compiling the venue list for Build 7's coordinate
+research. `RAW.MATCH` records 8 matches with `venue_city = 'Arlington'`
+and 1 match (Portugal vs Spain, 2026-07-06) with `venue_city = 'Dallas'`
+— but both are the same physical stadium, AT&T Stadium in Arlington, TX.
+It was temporarily rebranded "Dallas Stadium" for World Cup broadcast
+purposes (FIFA avoids sponsor-named stadium branding), and the upstream
+Jürisoo source recorded that one match's city inconsistently. Confirmed
+via CBS News and multiple ticketing sources (Gametime, SeatGeek,
+Ticketmaster all list the match at "AT&T Stadium, Arlington, TX").
+Before this fix, `CORE.DIM_VENUE` had 17 rows for what is really 16
+distinct venues, and the Portugal-Spain match's `fact_match.venue_id`
+pointed to a phantom duplicate venue instead of the real Arlington row.
+
+**Why fix in CORE, not RAW**: `RAW` is documented as "landed source
+files, as ingested, no transformation" (`docs/architecture.md`) — the
+inconsistency is genuinely present in the source, so `RAW.MATCH` should
+keep reflecting it faithfully. The correction belongs at the
+transformation layer, same as every other RAW→CORE derivation.
+
+**Validation performed**: Re-ran `src/core/build_core.py` after the fix;
+`CORE.DIM_VENUE` = 16 rows (was 17), `fact_match` still 104 rows, 0
+orphaned FKs on every checked column (same check as Build 4).
+
+---
+
 ## 2026-07-30 — Build 4: zero-copy clone of CORE cut for the initial load
 
 **Decision**: Do not zero-copy clone `CORE` before populating it for the
