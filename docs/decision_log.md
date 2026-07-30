@@ -1,5 +1,80 @@
 # Decision Log — 2026 World Cup Format Evaluation
 
+## 2026-07-30 — Build 4: zero-copy clone of CORE cut for the initial load
+
+**Decision**: Do not zero-copy clone `CORE` before populating it for the
+first time in Build 4.
+
+**Why**: Build 1 kept zero-copy cloning provisionally, explicitly deferring
+the cost/benefit call to Build 4 ("revisit at that point, don't assume it
+still holds" — `docs/architecture.md`). The actual justification for
+cloning is protection against a risky transformation mutating *existing*
+valuable data. `CORE`'s tables are empty going into this build — there is
+no prior state worth protecting, and Time Travel (already kept, per
+`docs/architecture.md`) already gives a free rollback path for anything
+that goes wrong during this session. Cloning empty tables adds no real
+protection here.
+
+**Revisit condition**: Once `CORE` holds validated data that a later build
+would risk mutating (e.g. a schema change or backfill after Build 5/6),
+re-apply the original justification then, not retroactively here.
+
+---
+
+## 2026-07-30 — Team→confederation crosswalk compiled, not scraped
+
+**Decision**: `data/raw/wc2026_confederation_map.csv` (48 teams → 6 FIFA
+confederations) is compiled directly from known 2026 World Cup qualifying
+outcomes, not pulled from any external file or source in this repo — no
+confederation data existed anywhere in the project before this.
+
+**Why**: Unlike the venue-coordinate problem (Source 3, ruled out for
+license and fabrication reasons), FIFA confederation membership by country
+is stable, publicly known, and not the kind of fact that gets fabricated
+or disputed between sources — there's no equivalent "unlicensed repo with
+plausible-looking numbers" risk here. The compiled split (16 UEFA / 10 CAF
+/ 9 AFC / 6 CONCACAF / 6 CONMEBOL / 1 OFC = 48) was checked against the
+confirmed 48-team roster (`data/raw/wc2026_group_draw.csv`) for exact name
+match — zero missing, zero extra.
+
+**Residual risk, stated plainly**: A small number of teams reached the
+tournament via intercontinental or confederation playoff routes (e.g.
+Iraq, Jordan, DR Congo) rather than direct qualification. The confederation
+assignment itself is not in question (playoff route doesn't change which
+confederation a team belongs to), but this crosswalk has not been
+cross-checked against a second independent source the way the group draw
+was. Treat it the same way the group draw is treated pending its own
+second cross-check: usable, not yet load-bearing in a published claim
+without one.
+
+---
+
+## 2026-07-30 — Build 4: `went_to_et` and `neutral_site` left NULL in `fact_match`
+
+**Decision**: `fact_match.went_to_et` and `fact_match.neutral_site` are
+populated as `NULL` for all 104 rows in Build 4, not derived or guessed.
+
+**Why**: `docs/data_dictionary.md` documents that `home_score`/`away_score`
+in the Jürisoo source are already FT+ET combined, with no separate
+regulation-time-only score field — so there is no way to tell, from data
+currently in `RAW`, whether a given knockout match actually went to extra
+time versus being decided in 90 minutes. Similarly, the upstream source
+(`international_results_full.csv`) carries a `neutral` flag, but
+`data/processed/wc2026_stage_mapping.csv` (the actual `RAW.MATCH` load
+source) does not carry that column through — it was dropped when the
+Build 0 transform was built, before this need was identified.
+`went_to_so` *is* derivable (a shootout record for the match exists or it
+doesn't) and is populated correctly.
+
+**Revisit condition**: If `neutral_site` is needed later, extend
+`src/transform/build_stage_mapping.py`'s output to carry the `neutral`
+column through from `international_results_full.csv` (surgical change,
+not now — that CSV is a validated, committed artifact, not touched as a
+side effect of Build 4). `went_to_et` would need a genuinely new source
+with regulation-time scores; none has been found in this project.
+
+---
+
 ## 2026-07-21 — Match-results backbone: use martj42/international_results, not a 2026-specific dataset
 
 **Decision**: The CC0-licensed, historically-maintained Jürisoo dataset is the source of record for match results and historical comparison, in preference to any of the 2026-specific Kaggle/GitHub datasets found.
