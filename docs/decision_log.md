@@ -1,5 +1,53 @@
 # Decision Log — 2026 World Cup Format Evaluation
 
+## 2026-07-30 — Build 7: rest-day definition and time zone handling, decided before calculating
+
+**Decision**: `rest_days` in the travel/rest mart is `DATEDIFF('day',
+previous_match_date, match_date)` — full calendar days elapsed since a
+team's previous match, computed on the bare `match_date` values already
+in `RAW.MATCH`. No time zone conversion is applied anywhere in this
+calculation.
+
+**Why no time zone conversion**: `RAW.MATCH` (and every upstream source
+feeding it) carries only a `match_date` — no kickoff time-of-day, no time
+zone field. There is nothing to convert: time zone handling only matters
+when comparing two clock times across zones, and no clock time exists
+anywhere in this project's data. Converting a bare date across time zones
+would be inventing precision the source data doesn't have, not correcting
+an omission.
+
+**What this simplification actually costs**: two teams with the same
+`rest_days` value may have had meaningfully different real-world rest —
+e.g. a team playing a 9pm ET kickoff followed by a 12pm PT kickoff three
+calendar-days later rested closer to 3.5 days in wall-clock terms than a
+team with two mid-afternoon local kickoffs three calendar-days apart.
+This is stated plainly rather than glossed over, per the build plan's
+explicit instruction to document time zone handling before any
+calculation runs — not because a fix is being deferred, but because no
+fix is possible without a data source this project doesn't have.
+
+**Distance calculation**: uses Snowflake's native `ST_MAKEPOINT`/
+`ST_DISTANCE` geography functions (great-circle distance between
+consecutive venue coordinates, in km) — this is the "Geospatial
+functions" feature `docs/architecture.md` already kept, explicitly
+contingent on venue coordinates being independently re-verified first.
+That happened in the previous decision-log entry; this is the build that
+was gated on it.
+
+**Validation performed**: Ran against the live account.
+`ANALYTICS.TEAM_TRAVEL_REST` = 208 rows (104 matches × 2 teams), 48 rows
+with no previous match (one per team, its tournament opener), 0 rows with
+a previous match but a missing `distance_km`/`rest_days`. `distance_km`
+ranges 0–4302.7 km (20 rows at exactly 0 km — teams playing consecutive
+matches at the same venue), `rest_days` ranges 3–8 (mean ~5.3) — both
+sane for this tournament's format. Spot-checked Argentina's full
+8-match run to the Final: every `previous_match_date + rest_days =
+match_date` held exactly. Confirmed idempotent by running
+`src/geospatial/build_travel_rest.py` twice in a row with identical
+results both times.
+
+---
+
 ## 2026-07-30 — Build 7 research: venue coordinates independently sourced
 
 **Decision**: `data/raw/wc2026_venue_coordinates.csv` (16 venues, one row
