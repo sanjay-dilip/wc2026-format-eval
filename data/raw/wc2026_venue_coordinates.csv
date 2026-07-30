@@ -1,0 +1,17 @@
+city,country,venue_name,latitude,longitude,source_url
+Arlington,United States,AT&T Stadium,32.74778,-97.09278,https://en.wikipedia.org/wiki/AT%26T_Stadium
+Atlanta,United States,Mercedes-Benz Stadium,33.75556,-84.40000,https://en.wikipedia.org/wiki/Mercedes-Benz_Stadium
+East Rutherford,United States,MetLife Stadium,40.813528,-74.074361,https://en.wikipedia.org/wiki/MetLife_Stadium
+Foxborough,United States,Gillette Stadium,42.091,-71.264,https://en.wikipedia.org/wiki/Gillette_Stadium
+Guadalupe,Mexico,Estadio BBVA,25.66917,-100.24444,https://en.wikipedia.org/wiki/Estadio_BBVA
+Houston,United States,NRG Stadium,29.68472,-95.41083,https://en.wikipedia.org/wiki/NRG_Stadium
+Inglewood,United States,SoFi Stadium,33.953,-118.339,https://en.wikipedia.org/wiki/SoFi_Stadium
+Kansas City,United States,GEHA Field at Arrowhead Stadium,39.04889,-94.48389,https://en.wikipedia.org/wiki/GEHA_Field_at_Arrowhead_Stadium
+Mexico City,Mexico,Estadio Azteca,19.3030,-99.1505,https://en.wikipedia.org/wiki/Estadio_Azteca
+Miami Gardens,United States,Hard Rock Stadium,25.95806,-80.23889,https://en.wikipedia.org/wiki/Hard_Rock_Stadium
+Philadelphia,United States,Lincoln Financial Field,39.90083,-75.16750,https://en.wikipedia.org/wiki/Lincoln_Financial_Field
+Santa Clara,United States,Levi's Stadium,37.403,-121.970,https://en.wikipedia.org/wiki/Levi%27s_Stadium
+Seattle,United States,Lumen Field,47.5952,-122.3316,https://en.wikipedia.org/wiki/Lumen_Field
+Toronto,Canada,BMO Field,43.63333,-79.41861,https://en.wikipedia.org/wiki/BMO_Field
+Vancouver,Canada,BC Place,49.27667,-123.11194,https://en.wikipedia.org/wiki/BC_Place
+Zapopan,Mexico,Estadio Akron,20.68167,-103.46278,https://en.wikipedia.org/wiki/Estadio_Akron

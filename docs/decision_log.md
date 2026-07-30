@@ -1,5 +1,47 @@
 # Decision Log — 2026 World Cup Format Evaluation
 
+## 2026-07-30 — Build 7 research: venue coordinates independently sourced
+
+**Decision**: `data/raw/wc2026_venue_coordinates.csv` (16 venues, one row
+each) is the independently re-verified replacement for the venue
+coordinates that were ruled out in Build 0's feasibility pass (open
+blocker #3). Each row cites its own Wikipedia source URL — not copied
+from the disqualified "FIFA-World-Cup-2026-Dataset" repo
+(`docs/data_feasibility_report.md`, Source 3: no LICENSE file, confirmed
+fabricated data elsewhere in the same repo).
+
+**Why Wikipedia**: `docs/data_feasibility_report.md` characterizes venue
+coordinates as "public facts, easily re-sourced" — this isn't a
+disputed-numbers problem the way rankings or tactical stats are, it's a
+sourcing-and-citation problem. Wikipedia's per-stadium infobox
+coordinates are independently checkable (each cites its own primary
+source in turn) and structurally distinct from the disqualified repo:
+no licensing conflict (facts aren't copyrightable), no relation to that
+repo's confirmed fabrication.
+
+**Cross-checks performed**:
+- The 16-stadium list itself was verified against Wikipedia's "2026 FIFA
+  World Cup" venues section, independent of any per-stadium page.
+- Every city name in the coordinates file was checked for exact string
+  match against `RAW.MATCH`'s 16 normalized venue cities (after the
+  Dallas→Arlington fix in PR #10) — zero missing, zero extra.
+- Guadalupe (not Monterrey) and Zapopan (not Guadalajara) were confirmed
+  directly from each stadium's own Wikipedia article, matching what
+  `RAW.MATCH` already records — these are real suburb/city distinctions,
+  not naming inconsistencies like Dallas/Arlington.
+
+**Not yet done**: A second independent source per venue (the same
+standard the group draw and confederation crosswalk are held to,
+pending). Coordinates are precise enough for the intended use (travel
+distance between consecutive venues) but each one is currently backed by
+a single source. Loading these into `dim_venue` and building the
+travel-distance mart is Build 7's implementation, done separately from
+this research pass. Also depends on PR #10 (Dallas/Arlington fix)
+merging first, so coordinates get backfilled onto the correctly-deduped
+16-row `dim_venue`, not a 17-row table with a phantom duplicate.
+
+---
+
 ## 2026-07-30 — Build 4: zero-copy clone of CORE cut for the initial load
 
 **Decision**: Do not zero-copy clone `CORE` before populating it for the
