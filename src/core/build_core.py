@@ -8,6 +8,11 @@ No zero-copy clone of CORE before this load: docs/decision_log.md
 (2026-07-30 entry) documents why - CORE is empty going into Build 4, so
 there is no prior state worth protecting, and Time Travel already covers
 this session's risk.
+
+After the dimension/fact populate loop, backfills dim_venue.venue_name
+and lat/long from RAW.VENUE_COORDINATES (Build 7 research) - an UPDATE,
+not a truncate+insert, but idempotent on its own terms since it always
+sets the same values from the same source rows.
 """
 
 import logging
@@ -59,6 +64,15 @@ def populate_table(cursor, sql_file: str, table_name: str) -> None:
     logger.info("Populated %s: %s rows", table_name, row_count)
 
 
+def backfill_dim_venue_coordinates(cursor) -> None:
+    """Run the RAW.VENUE_COORDINATES -> CORE.DIM_VENUE UPDATE."""
+    query = (POPULATE_DIR / "08_backfill_dim_venue_coordinates.sql").read_text(encoding="utf-8")
+    cursor.execute(query)
+    cursor.execute("SELECT COUNT(*) FROM CORE.DIM_VENUE WHERE latitude IS NULL")
+    missing = cursor.fetchone()[0]
+    logger.info("dim_venue coordinate backfill: %s rows still missing lat/long", missing)
+
+
 def check_orphaned_foreign_keys(cursor) -> dict[str, int]:
     """Return the count of CORE.FACT_MATCH rows whose FK doesn't resolve
     against its dimension table, for every FK except the nullable
@@ -81,6 +95,7 @@ def main() -> None:
         cursor = conn.cursor()
         for sql_file, table_name in POPULATE_ORDER:
             populate_table(cursor, sql_file, table_name)
+        backfill_dim_venue_coordinates(cursor)
         conn.commit()
 
         orphan_counts = check_orphaned_foreign_keys(cursor)
