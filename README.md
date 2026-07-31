@@ -32,7 +32,8 @@ performance) are not built yet — see Status below.
 | 4 | Dimensional model (`CORE` schema) | Done |
 | 5 | Historical comparison layer (2022, 1994 alongside 2026; `ANALYTICS.TOURNAMENT_FORMAT_COMPARISON`) | Done |
 | 7 | Venue coordinates + travel/rest mart (`ANALYTICS.TEAM_TRAVEL_REST`) | Done, second-source coordinate cross-check complete (issue #13) |
-| 6, 8, 9, 10, C | Rankings + core analytical marts, incremental-load demo, cross-account sharing, Power BI layer, consolidation | Not started |
+| 6 (part 1 of 2) | FIFA ranking sourcing + `CORE.TEAM_TOURNAMENT_RANKING`, mart metric definitions | Done (issue #19) |
+| 6 (part 2 of 2), 8, 9, 10, C | The 5 analytical marts + statistical validation, incremental-load demo, cross-account sharing, Power BI layer, consolidation | Not started |
 
 Full build-by-build detail: `docs/build_plan.md`. Sourcing decisions and
 their rationale: `docs/decision_log.md`.
@@ -140,8 +141,17 @@ tests/                    pytest suite + fixtures (including a deliberately bad-
 - **Venue coordinates**: independently sourced and cited per venue from
   Wikipedia (`data/raw/wc2026_venue_coordinates.csv`), replacing an
   unlicensed, partially-fabricated third-party dataset ruled out during
-  feasibility research. Single-sourced per venue, pending a second
-  independent cross-check (tracked, prioritized ahead of Build 5).
+  feasibility research. Cross-checked against a second independent source
+  (OpenStreetMap/Nominatim, issue #13).
+- **FIFA World Ranking**: one snapshot per tournament (2026, 2022, 1994),
+  each from that tournament's own Wikipedia seeding/qualification article
+  citing FIFA's own official ranking release
+  (`data/raw/wc_fifa_ranking_snapshots.csv`). Several GitHub scraper repos
+  and a third-party Elo-rating alternative were evaluated and rejected
+  (no license, or not FIFA's own ranking system) — see
+  `docs/decision_log.md`. Single-sourced, pending a second independent
+  cross-check, same caveat status as the group draw and confederation
+  crosswalk.
 
 Every sourcing decision, including what was rejected and why, is logged
 in `docs/decision_log.md`.

@@ -1,5 +1,149 @@
 # Decision Log — 2026 World Cup Format Evaluation
 
+## 2026-07-31 — Build 6 Part 1: FIFA ranking sourcing, ingestion, and mart metric definitions
+
+**Decision**: FIFA World Ranking data is sourced as **one snapshot per
+tournament** (2026, 2022, 1994), each pulled from that tournament's own
+Wikipedia seeding/qualification article, not a continuous historical
+ranking time series. `data/raw/wc_fifa_ranking_snapshots.csv` (104 rows -
+one per team per tournament) and `CORE.TEAM_TOURNAMENT_RANKING` (grain:
+team x tournament, not a `dim_team` column) hold this.
+
+**Why a snapshot per tournament, not a full historical dataset**: open
+blocker #1 originally framed this as "resolve FIFA rankings sourcing" in
+the abstract, but the actual need - per this build's own mart definitions
+(`docs/metric_definitions.md`, written as part of this same issue) - is
+narrower: upset rate and expected-vs-actual only need each team's ranking
+*at the time of the tournament it played in*, not a month-by-month series
+going back decades. Framing it this way turned an open-ended, hard sourcing
+problem into a bounded, verifiable one.
+
+**Candidates evaluated and rejected**:
+- **FIFA's own ranking page** (`inside.fifa.com/fifa-world-ranking/men`) -
+  confirmed directly (fetched and inspected): JS-rendered SPA, empty HTML
+  shell, only column headers retrievable. Same conclusion the 2026-07-21
+  decision-log entry already reached for FIFA's match-centre pages -
+  consistent finding, not re-litigated from scratch.
+- **`Dato-Futbol/fifa-ranking`** (GitHub, scraped historical FIFA rankings
+  Dec 1992-Sept 2024) - confirmed via the GitHub API (`"license": null`):
+  no LICENSE file. Same disqualifying reason as the mominullptr repo ruled
+  out in Build 0 (`docs/data_feasibility_report.md`, Source 3) - default
+  all-rights-reserved copyright, real reuse risk. Also stale (no 2026
+  coverage).
+- **`cnc8/fifa-world-ranking`** (GitHub, similar scraper) - also confirmed
+  `"license": null` via the GitHub API. Same rejection reason.
+- **eloratings.net** (World Football Elo Ratings, 1901-2026 coverage) -
+  not FIFA's own ranking system (a different rating methodology), no
+  documented API, requires headless-browser scraping (PhantomJS, per a
+  project that consumes it) with no confirmed reuse terms found on the
+  primary site itself on direct inspection. A linked Kaggle mirror exists
+  but Kaggle pages are JS-rendered and couldn't be inspected for license
+  terms without a Kaggle account/API token - would also have broken this
+  project's established fetch-script pattern (plain unauthenticated HTTP
+  GET, no credentials - `src/ingestion/fetch_historical_results.py`,
+  Build 5).
+- **`mominullptr/FIFA-World-Cup-2026-Dataset`** - already disqualified
+  project-wide in Build 0 for confirmed fabricated data and no LICENSE
+  file; a later self-reported "CC0" claim on the same project's own GitHub
+  Pages site does not override that direct finding, especially given
+  Build 0's own conclusion was "marketing claims do not match source code
+  behavior" for this exact repo. Not reconsidered.
+
+**Source used**: each tournament's own Wikipedia seeding/qualification
+article, which cites FIFA's own official ranking release for that date as
+its primary source - the same tier and reasoning already applied to venue
+coordinates (`docs/decision_log.md`, Build 7 research entry: public,
+officially-published facts, individually citable and checkable, not
+disputed numbers). Raw wikitext was fetched directly (`action=raw`, not
+AI-summarized page text) and parsed with a script to avoid transcription
+error, given the volume (104 team/rank pairs across 3 pages):
+- 2026: [`2026 FIFA World Cup draw`](https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_draw),
+  ranking as of 19 November 2025 (FIFA's own release, cited in the
+  article). 42 of 48 teams covered - the article states plainly the other
+  6 were playoff winners not yet determined at the 5 December 2025 draw.
+- 2022: [`2022 FIFA World Cup seeding`](https://en.wikipedia.org/wiki/2022_FIFA_World_Cup_seeding),
+  ranking as of 31 March 2022. 29 of 32 teams covered - 3 were
+  intercontinental/UEFA playoff winners not yet known at the 1 April 2022
+  draw.
+- 1994: [`1994 FIFA World Cup qualification`](https://en.wikipedia.org/wiki/1994_FIFA_World_Cup_qualification),
+  ranking as of **19 November 1993** (not "June 1994" - an earlier
+  AI-summarized read of this page got the date wrong, caught by checking
+  the raw wikitext directly rather than trusting the summary; this is
+  exactly why the raw-fetch approach was used for the actual data
+  extraction). All 24 teams covered.
+
+**Cross-checked, not assumed**: every parsed (team code, rank) pair was
+mapped to this project's canonical team-name spellings and checked against
+the exact team rosters already established for each tournament
+(`wc2026_confederation_map.csv` for 2026, `wc_historical_matches.csv` for
+2022/1994). The "missing" teams in each source (6 for 2026, 3 for 2022, 0
+for 1994) matched **exactly** the teams each Wikipedia article itself says
+weren't determined yet at that snapshot date - a real cross-check that
+caught nothing wrong, which is itself the confirmation the parse and
+mapping are correct, not just internally consistent.
+
+**A genuine tie found, not smoothed over**: Argentina and Switzerland both
+show FIFA ranking **9** in the 1994 snapshot. Not a parsing bug - both
+values were independently re-verified against the raw wikitext rows.
+Left as-is; an early-era FIFA ranking formula (the system was only ~2
+months old at this snapshot date) producing an exact tie between two
+teams is plausible and not this project's place to silently break.
+
+**Design decision: rankings are a team x tournament bridge table, not a
+`dim_team` column.** `docs/architecture.md`'s original Build 1-era design
+put `fifa_ranking` directly on `dim_team`, written when only 2026 existed
+and a single snapshot per team was sufficient. Build 5 changed that: a
+returning team (e.g. Brazil, in all 3 comparison tournaments) has a
+genuinely different ranking each time - confirmed live: Brazil is ranked
+4th (1994), 1st (2022), and 5th (2026). A single `dim_team.fifa_ranking`
+column cannot hold three different values for the same team, so it stays
+permanently `NULL` (not populated as Build 1 originally planned - the
+column is left in place, not dropped, since dropping it is outside this
+change's scope). `CORE.TEAM_TOURNAMENT_RANKING` (grain: team x tournament)
+is the actual source of truth going forward.
+
+**Metric definitions**: all 5 Build 6 marts (competitive balance, group
+difficulty, upset rate, confederation performance, expected-vs-actual)
+have full written definitions - business meaning, formula, grain, null
+handling, ET/shootout handling, historical comparability - in the new
+`docs/metric_definitions.md`, written before any mart SQL exists, per this
+build's own success criteria. Two of the five (group difficulty,
+expected-vs-actual) are explicitly gated to partial or 2026-only coverage,
+stated there rather than discovered later: group difficulty has no data
+for 2022/1994 at all (no group source ever existed for those years -
+Build 5), and expected-vs-actual can only use a real stage-level "actual
+finish" for 2026, falling back to an explicitly-flawed match-count proxy
+for 2022/1994.
+
+**Why this is a compiled static CSV, not a fetch script like Build 5's**:
+`data/raw/wc_fifa_ranking_snapshots.csv` is committed directly (like
+`wc2026_venue_coordinates.csv` and `wc2026_confederation_map.csv`), not
+regenerated on demand from a fetch script (like
+`international_results_full.csv`, Build 5). The distinction is
+deliberate: `international_results_full.csv` comes from a single
+maintainer's versioned, append-only CSV file - safe to re-fetch anytime
+and get the same historical rows back. Wikipedia articles are
+live-edited, not versioned or append-only - re-running a "fetch and parse"
+script months from now could silently return different numbers if the
+article changed, invalidating this entry's cross-checks without anyone
+noticing. A compiled, cited, one-time extraction (same pattern as the
+2026-07-21 Yahoo Sports entry: "manually transcribed... not scraped
+programmatically... a one-time historical reconstruction") is the
+correct choice for a source that isn't stable to re-fetch, not a gap.
+
+**Validation performed, against the live account, not assumed**:
+`RAW.FIFA_RANKING_SNAPSHOT` = 104 rows. `CORE.TEAM_TOURNAMENT_RANKING` =
+104 rows, 9 with `fifa_ranking IS NULL` (exactly the 6 + 3 teams not yet
+determined at each tournament's snapshot date - confirmed, not assumed).
+`CORE.DIM_TEAM.fifa_ranking` confirmed `NULL` for all 62 rows (superseded,
+per above). Confirmed idempotent by running `src/core/build_core.py`
+twice in a row with identical results. `src/geospatial/build_travel_rest.py`
+and the full validation/test suite (16/16 pytest) re-run afterward with no
+regressions - this change only added a table, it didn't touch anything
+Build 5 built.
+
+---
+
 ## 2026-07-31 — Build 5: Historical Comparison Layer
 
 **Decision**: `CORE.FACT_MATCH` is extended with historical World Cup

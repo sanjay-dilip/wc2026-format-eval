@@ -209,6 +209,31 @@ quo:
 
 ---
 
+## `data/raw/wc_fifa_ranking_snapshots.csv` (Build 6)
+
+- **Produced by**: Compiled from each tournament's own Wikipedia
+  seeding/qualification article (which cites FIFA's own official ranking
+  release), parsed from raw wikitext by script rather than transcribed by
+  hand - see `docs/decision_log.md` for full sourcing rationale and the
+  rejected alternatives.
+- **Grain**: One row per team per tournament (2026, 2022, 1994) - a
+  snapshot at that tournament's own ranking date, not a continuous
+  historical series.
+- **Row count**: 104 data rows (48 + 32 + 24). Checked exactly against
+  each tournament's own team roster: zero missing, zero extra.
+- **Columns**: `tournament_year`, `team`, `fifa_ranking` (nullable — see
+  below), `ranking_as_of_date`, `source_url`.
+- **Nulls**: 9 rows have `fifa_ranking` empty — 6 for 2026, 3 for 2022,
+  exactly the teams each source article states were not yet determined
+  (still in playoffs) at that tournament's ranking-snapshot date. Verified
+  against each article's own text, not inferred.
+- **Known limitations**: single-sourced to Wikipedia, not yet
+  independently cross-checked against a second source — same caveat
+  status as venue coordinates before issue #13 and the group draw/
+  confederation crosswalk (still pending their own cross-checks).
+
+---
+
 ## Not yet verified / out of scope for this pass
 
 - No `data/interim/` directory currently exists — the recommendation above

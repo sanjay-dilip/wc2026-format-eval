@@ -23,6 +23,7 @@ VENUE_COORDINATES_SOURCE_PATH = REPO_ROOT / "data" / "raw" / "wc2026_venue_coord
 INTERNATIONAL_RESULTS_SOURCE_PATH = REPO_ROOT / "data" / "raw" / "international_results_full.csv"
 HISTORICAL_MATCH_SOURCE_PATH = REPO_ROOT / "data" / "processed" / "wc_historical_matches.csv"
 HISTORICAL_CONFEDERATION_SOURCE_PATH = REPO_ROOT / "data" / "raw" / "wc_historical_confederation_map.csv"
+FIFA_RANKING_SOURCE_PATH = REPO_ROOT / "data" / "raw" / "wc_fifa_ranking_snapshots.csv"
 
 
 @dataclass(frozen=True)

@@ -26,6 +26,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from config import (
     CONFEDERATION_SOURCE_PATH,
+    FIFA_RANKING_SOURCE_PATH,
     GROUP_DRAW_SOURCE_PATH,
     HISTORICAL_CONFEDERATION_SOURCE_PATH,
     HISTORICAL_MATCH_SOURCE_PATH,
@@ -99,6 +100,7 @@ def main() -> None:
             "RAW.HISTORICAL_TEAM_CONFEDERATION",
             cfg.warehouse,
         )
+        load_file(cursor, FIFA_RANKING_SOURCE_PATH, "RAW.FIFA_RANKING_SNAPSHOT", cfg.warehouse)
         conn.commit()
     finally:
         conn.close()
