@@ -1,8 +1,9 @@
-"""Populate CORE from validated RAW data: 6 dimensions, then fact_match.
+"""Populate CORE from validated RAW data: dimensions, then fact_match.
 
-Each table is truncated before its populate/*.sql query runs, so re-running
-this script is safe (same truncate-first pattern as src/ingestion/load_raw.py
-- see docs/decision_log.md's idempotency note from Build 3).
+Each table in POPULATE_ORDER is truncated before its populate/*.sql query
+runs, so re-running this script is safe (same truncate-first pattern as
+src/ingestion/load_raw.py - see docs/decision_log.md's idempotency note
+from Build 3).
 
 No zero-copy clone of CORE before this load: docs/decision_log.md
 (2026-07-30 entry) documents why - CORE is empty going into Build 4, so
@@ -12,7 +13,10 @@ this session's risk.
 After the dimension/fact populate loop, backfills dim_venue.venue_name
 and lat/long from RAW.VENUE_COORDINATES (Build 7 research) - an UPDATE,
 not a truncate+insert, but idempotent on its own terms since it always
-sets the same values from the same source rows.
+sets the same values from the same source rows. Then Build 5's historical
+matches are appended to fact_match separately (not part of the
+truncate-first loop - it must run after 07_fact_match.sql's truncate, not
+be truncated by it): see populate_historical_fact_match().
 """
 
 import logging
@@ -31,8 +35,10 @@ logger = logging.getLogger(__name__)
 POPULATE_DIR = REPO_ROOT / "sql" / "core" / "populate"
 
 # (populate SQL file, table it fills) - dependency order matters: dims
-# before fact_match, and dim_team depends on dim_group + dim_confederation
-# already being populated.
+# before fact_match, dim_team depends on dim_group + dim_confederation
+# already being populated, and dim_tournament (file 09, run here before
+# file 07) must exist before fact_match's 2026 insert can resolve its
+# tournament_id FK. File numbering reflects creation order, not run order.
 POPULATE_ORDER = [
     ("01_dim_date.sql", "CORE.DIM_DATE"),
     ("02_dim_group.sql", "CORE.DIM_GROUP"),
@@ -40,17 +46,23 @@ POPULATE_ORDER = [
     ("04_dim_stage.sql", "CORE.DIM_STAGE"),
     ("05_dim_venue.sql", "CORE.DIM_VENUE"),
     ("06_dim_team.sql", "CORE.DIM_TEAM"),
+    ("09_dim_tournament.sql", "CORE.DIM_TOURNAMENT"),
     ("07_fact_match.sql", "CORE.FACT_MATCH"),
 ]
 
 # fact_match FK column -> the dimension table it must resolve against.
-# so_winner_id is excluded: it's legitimately NULL for non-shootout matches.
+# so_winner_id is excluded: it's legitimately NULL for non-shootout
+# matches. stage_id and venue_id are checked only where NOT NULL: Build
+# 5's historical rows legitimately have neither (docs/decision_log.md) -
+# still caught if a *2026* row is ever missing one, just not flagged for
+# historical rows on that basis alone.
 FACT_MATCH_FK_CHECKS = [
-    ("date_id", "CORE.DIM_DATE", "date_id"),
-    ("stage_id", "CORE.DIM_STAGE", "stage_id"),
-    ("venue_id", "CORE.DIM_VENUE", "venue_id"),
-    ("home_team_id", "CORE.DIM_TEAM", "team_id"),
-    ("away_team_id", "CORE.DIM_TEAM", "team_id"),
+    ("date_id", "CORE.DIM_DATE", "date_id", False),
+    ("tournament_id", "CORE.DIM_TOURNAMENT", "tournament_id", False),
+    ("stage_id", "CORE.DIM_STAGE", "stage_id", True),
+    ("venue_id", "CORE.DIM_VENUE", "venue_id", True),
+    ("home_team_id", "CORE.DIM_TEAM", "team_id", False),
+    ("away_team_id", "CORE.DIM_TEAM", "team_id", False),
 ]
 
 
@@ -73,16 +85,32 @@ def backfill_dim_venue_coordinates(cursor) -> None:
     logger.info("dim_venue coordinate backfill: %s rows still missing lat/long", missing)
 
 
+def populate_historical_fact_match(cursor) -> None:
+    """Append Build 5's historical comparison matches to CORE.FACT_MATCH.
+
+    Not part of POPULATE_ORDER's truncate-first loop on purpose: it must
+    run after 07_fact_match.sql's truncate+insert, appending to it, not
+    truncating it again.
+    """
+    query = (POPULATE_DIR / "10_fact_match_historical.sql").read_text(encoding="utf-8")
+    cursor.execute(query)
+    cursor.execute("SELECT COUNT(*) FROM CORE.FACT_MATCH")
+    row_count = cursor.fetchone()[0]
+    logger.info("CORE.FACT_MATCH after historical append: %s rows", row_count)
+
+
 def check_orphaned_foreign_keys(cursor) -> dict[str, int]:
     """Return the count of CORE.FACT_MATCH rows whose FK doesn't resolve
-    against its dimension table, for every FK except the nullable
-    so_winner_id."""
+    against its dimension table. For FKs flagged nullable (stage_id,
+    venue_id - legitimately NULL on Build 5's historical rows), only rows
+    where the FK is populated but unresolved count as orphaned."""
     orphan_counts = {}
-    for fk_column, dim_table, dim_key in FACT_MATCH_FK_CHECKS:
+    for fk_column, dim_table, dim_key, nullable in FACT_MATCH_FK_CHECKS:
+        null_guard = f"f.{fk_column} IS NOT NULL AND " if nullable else ""
         cursor.execute(
             f"SELECT COUNT(*) FROM CORE.FACT_MATCH f "
             f"LEFT JOIN {dim_table} d ON d.{dim_key} = f.{fk_column} "
-            f"WHERE d.{dim_key} IS NULL"
+            f"WHERE {null_guard}d.{dim_key} IS NULL"
         )
         orphan_counts[fk_column] = cursor.fetchone()[0]
     return orphan_counts
@@ -96,6 +124,7 @@ def main() -> None:
         for sql_file, table_name in POPULATE_ORDER:
             populate_table(cursor, sql_file, table_name)
         backfill_dim_venue_coordinates(cursor)
+        populate_historical_fact_match(cursor)
         conn.commit()
 
         orphan_counts = check_orphaned_foreign_keys(cursor)

@@ -18,6 +18,8 @@ value count, and explicit duplicate-key check on the candidate join key.
 
 - **Produced by**: Raw pull, unmodified. Corresponds to `results.csv` from
   the martj42/international_results source (see feasibility report, Source 1).
+  Gitignored (3.6+ MiB, not 2026-specific) - fetched on demand via
+  `src/ingestion/fetch_historical_results.py` (Build 5), not committed.
 - **Grain**: One row per international football match, all competitions,
   1872–2026-07-19.
 - **Row count**: 49,520 data rows (49,521 lines including header). Counted
@@ -170,6 +172,40 @@ quo:
   - Depends on the Yahoo Sports crosswalk, which the decision log already
     flags as a single non-official source pending a second independent
     cross-check — not re-litigated here.
+
+---
+
+## `data/processed/wc_historical_matches.csv` (Build 5)
+
+- **Produced by**: Derived. Filters `international_results_full.csv` to
+  `tournament == "FIFA World Cup"` and `date` year in `{2022, 1994}` - see
+  `src/transform/build_historical_matches.py` and
+  `docs/decision_log.md` for why those two years.
+- **Grain**: One row per match in the 2022 or 1994 World Cup.
+- **Row count**: 116 data rows (64 for 2022, 52 for 1994 - both confirmed
+  directly against the source data, matching the standard match count for
+  each format).
+- **Columns**: `tournament_year`, `match_date`, `home_team`, `away_team`,
+  `home_score`, `away_score`, `venue_city`, `venue_country`,
+  `neutral_site`. No `stage`/`group_letter` columns - unlike
+  `wc2026_stage_mapping.csv`, no verified stage/round source exists for
+  these years in this project (`docs/decision_log.md`).
+- **Candidate join key**: `tournament_year + match_date + home_team +
+  away_team`. Checked and confirmed unique: 116/116.
+
+---
+
+## `data/raw/wc_historical_confederation_map.csv` (Build 5)
+
+- **Produced by**: Compiled directly from known, stable FIFA confederation
+  membership (same method as Build 4's `wc2026_confederation_map.csv`),
+  not scraped - see `docs/decision_log.md`.
+- **Grain**: One row per team that appears in `wc_historical_matches.csv`
+  but not the 2026 roster (`wc2026_confederation_map.csv` already covers
+  those 48 teams).
+- **Row count**: 14 data rows. Checked exactly against the 116-row
+  historical match file's distinct team list: zero missing, zero extra.
+- **Columns**: `team`, `confederation_name`.
 
 ---
 

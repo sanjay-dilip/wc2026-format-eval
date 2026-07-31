@@ -1,5 +1,7 @@
--- Standard date dimension. Covers the 2026 match date range only for now
--- (Build 5 will need to extend this once historical tournaments join).
+-- Standard date dimension. Covers the 2026 match date range plus each
+-- Build 5 historical comparison tournament's own date range (populate
+-- query unions per-tournament windows, not one span covering the gap
+-- years too - see sql/core/populate/01_dim_date.sql).
 CREATE TABLE IF NOT EXISTS CORE.DIM_DATE (
     date_id NUMBER PRIMARY KEY,
     full_date DATE NOT NULL,

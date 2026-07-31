@@ -1,0 +1,117 @@
+tournament_year,match_date,home_team,away_team,home_score,away_score,venue_city,venue_country,neutral_site
+1994,1994-06-17,Germany,Bolivia,1,0,Chicago,United States,TRUE
+1994,1994-06-17,Spain,South Korea,2,2,Dallas,United States,TRUE
+1994,1994-06-18,Colombia,Romania,1,3,Pasadena,United States,TRUE
+1994,1994-06-18,Italy,Republic of Ireland,0,1,East Rutherford,United States,TRUE
+1994,1994-06-18,United States,Switzerland,1,1,Pontiac,United States,FALSE
+1994,1994-06-19,Belgium,Morocco,1,0,Orlando,United States,TRUE
+1994,1994-06-19,Cameroon,Sweden,2,2,Pasadena,United States,TRUE
+1994,1994-06-19,Norway,Mexico,1,0,"Washington, D.C.",United States,TRUE
+1994,1994-06-20,Brazil,Russia,2,0,Palo Alto,United States,TRUE
+1994,1994-06-20,Netherlands,Saudi Arabia,2,1,"Washington, D.C.",United States,TRUE
+1994,1994-06-21,Argentina,Greece,4,0,Foxborough,United States,TRUE
+1994,1994-06-21,Germany,Spain,1,1,Chicago,United States,TRUE
+1994,1994-06-21,Nigeria,Bulgaria,3,0,Dallas,United States,TRUE
+1994,1994-06-22,Romania,Switzerland,1,4,Pontiac,United States,TRUE
+1994,1994-06-22,United States,Colombia,2,1,Pasadena,United States,FALSE
+1994,1994-06-23,Italy,Norway,1,0,East Rutherford,United States,TRUE
+1994,1994-06-23,South Korea,Bolivia,0,0,Foxborough,United States,TRUE
+1994,1994-06-24,Brazil,Cameroon,3,0,Palo Alto,United States,TRUE
+1994,1994-06-24,Mexico,Republic of Ireland,2,1,Orlando,United States,TRUE
+1994,1994-06-24,Sweden,Russia,3,1,Pontiac,United States,TRUE
+1994,1994-06-25,Argentina,Nigeria,2,1,Foxborough,United States,TRUE
+1994,1994-06-25,Belgium,Netherlands,1,0,Orlando,United States,TRUE
+1994,1994-06-25,Saudi Arabia,Morocco,2,1,East Rutherford,United States,TRUE
+1994,1994-06-26,Bulgaria,Greece,4,0,Chicago,United States,TRUE
+1994,1994-06-26,Switzerland,Colombia,0,2,Palo Alto,United States,TRUE
+1994,1994-06-26,United States,Romania,0,1,Pasadena,United States,FALSE
+1994,1994-06-27,Bolivia,Spain,1,3,Chicago,United States,TRUE
+1994,1994-06-27,Germany,South Korea,3,2,Dallas,United States,TRUE
+1994,1994-06-28,Brazil,Sweden,1,1,Pontiac,United States,TRUE
+1994,1994-06-28,Italy,Mexico,1,1,"Washington, D.C.",United States,TRUE
+1994,1994-06-28,Republic of Ireland,Norway,0,0,East Rutherford,United States,TRUE
+1994,1994-06-28,Russia,Cameroon,6,1,Palo Alto,United States,TRUE
+1994,1994-06-29,Belgium,Saudi Arabia,0,1,"Washington, D.C.",United States,TRUE
+1994,1994-06-29,Morocco,Netherlands,1,2,Orlando,United States,TRUE
+1994,1994-06-30,Argentina,Bulgaria,0,2,Dallas,United States,TRUE
+1994,1994-06-30,Greece,Nigeria,0,2,Foxborough,United States,TRUE
+1994,1994-07-02,Germany,Belgium,3,2,Chicago,United States,TRUE
+1994,1994-07-02,Spain,Switzerland,3,0,"Washington, D.C.",United States,TRUE
+1994,1994-07-03,Romania,Argentina,3,2,Pasadena,United States,TRUE
+1994,1994-07-03,Saudi Arabia,Sweden,1,3,Dallas,United States,TRUE
+1994,1994-07-04,Netherlands,Republic of Ireland,2,0,Orlando,United States,TRUE
+1994,1994-07-04,United States,Brazil,0,1,Palo Alto,United States,FALSE
+1994,1994-07-05,Mexico,Bulgaria,1,1,East Rutherford,United States,TRUE
+1994,1994-07-05,Nigeria,Italy,1,2,Foxborough,United States,TRUE
+1994,1994-07-09,Italy,Spain,2,1,Foxborough,United States,TRUE
+1994,1994-07-09,Netherlands,Brazil,2,3,Dallas,United States,TRUE
+1994,1994-07-10,Bulgaria,Germany,2,1,East Rutherford,United States,TRUE
+1994,1994-07-10,Romania,Sweden,2,2,Palo Alto,United States,TRUE
+1994,1994-07-13,Bulgaria,Italy,1,2,East Rutherford,United States,TRUE
+1994,1994-07-13,Sweden,Brazil,0,1,Pasadena,United States,TRUE
+1994,1994-07-16,Sweden,Bulgaria,4,0,Pasadena,United States,TRUE
+1994,1994-07-17,Brazil,Italy,0,0,Pasadena,United States,TRUE
+2022,2022-11-20,Qatar,Ecuador,0,2,Al Khor,Qatar,FALSE
+2022,2022-11-21,England,Iran,6,2,Al Rayyan,Qatar,TRUE
+2022,2022-11-21,Senegal,Netherlands,0,2,Doha,Qatar,TRUE
+2022,2022-11-21,United States,Wales,1,1,Al Rayyan,Qatar,TRUE
+2022,2022-11-22,Argentina,Saudi Arabia,1,2,Lusail,Qatar,TRUE
+2022,2022-11-22,Denmark,Tunisia,0,0,Al Rayyan,Qatar,TRUE
+2022,2022-11-22,France,Australia,4,1,Al Wakrah,Qatar,TRUE
+2022,2022-11-22,Mexico,Poland,0,0,Doha,Qatar,TRUE
+2022,2022-11-23,Belgium,Canada,1,0,Al Rayyan,Qatar,TRUE
+2022,2022-11-23,Germany,Japan,1,2,Al Rayyan,Qatar,TRUE
+2022,2022-11-23,Morocco,Croatia,0,0,Al Khor,Qatar,TRUE
+2022,2022-11-23,Spain,Costa Rica,7,0,Doha,Qatar,TRUE
+2022,2022-11-24,Brazil,Serbia,2,0,Lusail,Qatar,TRUE
+2022,2022-11-24,Portugal,Ghana,3,2,Doha,Qatar,TRUE
+2022,2022-11-24,Switzerland,Cameroon,1,0,Al Wakrah,Qatar,TRUE
+2022,2022-11-24,Uruguay,South Korea,0,0,Al Rayyan,Qatar,TRUE
+2022,2022-11-25,England,United States,0,0,Al Khor,Qatar,TRUE
+2022,2022-11-25,Netherlands,Ecuador,1,1,Al Rayyan,Qatar,TRUE
+2022,2022-11-25,Qatar,Senegal,1,3,Doha,Qatar,FALSE
+2022,2022-11-25,Wales,Iran,0,2,Al Rayyan,Qatar,TRUE
+2022,2022-11-26,Argentina,Mexico,2,0,Lusail,Qatar,TRUE
+2022,2022-11-26,France,Denmark,2,1,Doha,Qatar,TRUE
+2022,2022-11-26,Poland,Saudi Arabia,2,0,Al Rayyan,Qatar,TRUE
+2022,2022-11-26,Tunisia,Australia,0,1,Al Wakrah,Qatar,TRUE
+2022,2022-11-27,Belgium,Morocco,0,2,Doha,Qatar,TRUE
+2022,2022-11-27,Croatia,Canada,4,1,Al Rayyan,Qatar,TRUE
+2022,2022-11-27,Japan,Costa Rica,0,1,Al Rayyan,Qatar,TRUE
+2022,2022-11-27,Spain,Germany,1,1,Al Khor,Qatar,TRUE
+2022,2022-11-28,Brazil,Switzerland,1,0,Doha,Qatar,TRUE
+2022,2022-11-28,Cameroon,Serbia,3,3,Al Wakrah,Qatar,TRUE
+2022,2022-11-28,Portugal,Uruguay,2,0,Lusail,Qatar,TRUE
+2022,2022-11-28,South Korea,Ghana,2,3,Al Rayyan,Qatar,TRUE
+2022,2022-11-29,Ecuador,Senegal,1,2,Al Rayyan,Qatar,TRUE
+2022,2022-11-29,Iran,United States,0,1,Doha,Qatar,TRUE
+2022,2022-11-29,Qatar,Netherlands,0,2,Al Khor,Qatar,FALSE
+2022,2022-11-29,Wales,England,0,3,Al Rayyan,Qatar,TRUE
+2022,2022-11-30,Australia,Denmark,1,0,Al Wakrah,Qatar,TRUE
+2022,2022-11-30,Poland,Argentina,0,2,Doha,Qatar,TRUE
+2022,2022-11-30,Saudi Arabia,Mexico,1,2,Lusail,Qatar,TRUE
+2022,2022-11-30,Tunisia,France,1,0,Al Rayyan,Qatar,TRUE
+2022,2022-12-01,Canada,Morocco,1,2,Doha,Qatar,TRUE
+2022,2022-12-01,Costa Rica,Germany,2,4,Al Khor,Qatar,TRUE
+2022,2022-12-01,Croatia,Belgium,0,0,Al Rayyan,Qatar,TRUE
+2022,2022-12-01,Japan,Spain,2,1,Al Rayyan,Qatar,TRUE
+2022,2022-12-02,Cameroon,Brazil,1,0,Lusail,Qatar,TRUE
+2022,2022-12-02,Ghana,Uruguay,0,2,Al Wakrah,Qatar,TRUE
+2022,2022-12-02,Serbia,Switzerland,2,3,Doha,Qatar,TRUE
+2022,2022-12-02,South Korea,Portugal,2,1,Al Rayyan,Qatar,TRUE
+2022,2022-12-03,Argentina,Australia,2,1,Al Rayyan,Qatar,TRUE
+2022,2022-12-03,Netherlands,United States,3,1,Al Rayyan,Qatar,TRUE
+2022,2022-12-04,England,Senegal,3,0,Al Khor,Qatar,TRUE
+2022,2022-12-04,France,Poland,3,1,Doha,Qatar,TRUE
+2022,2022-12-05,Brazil,South Korea,4,1,Doha,Qatar,TRUE
+2022,2022-12-05,Japan,Croatia,1,1,Al Wakrah,Qatar,TRUE
+2022,2022-12-06,Morocco,Spain,0,0,Al Rayyan,Qatar,TRUE
+2022,2022-12-06,Portugal,Switzerland,6,1,Lusail,Qatar,TRUE
+2022,2022-12-09,Croatia,Brazil,1,1,Al Rayyan,Qatar,TRUE
+2022,2022-12-09,Netherlands,Argentina,2,2,Lusail,Qatar,TRUE
+2022,2022-12-10,England,France,1,2,Al Khor,Qatar,TRUE
+2022,2022-12-10,Morocco,Portugal,1,0,Doha,Qatar,TRUE
+2022,2022-12-13,Argentina,Croatia,3,0,Lusail,Qatar,TRUE
+2022,2022-12-14,France,Morocco,2,0,Al Khor,Qatar,TRUE
+2022,2022-12-17,Croatia,Morocco,2,1,Al Rayyan,Qatar,TRUE
+2022,2022-12-18,Argentina,France,3,3,Lusail,Qatar,TRUE

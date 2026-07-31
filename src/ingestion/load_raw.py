@@ -1,6 +1,7 @@
 """Load the 2026 match subset, the full shootout history, the group draw
-crosswalk, the confederation crosswalk, and the venue coordinates into
-RAW, and record one AUDIT.LOAD_LOG row per file loaded.
+crosswalk, the confederation crosswalk, the venue coordinates, and the
+Build 5 historical comparison matches + crosswalk into RAW, and record one
+AUDIT.LOAD_LOG row per file loaded.
 
 Each load truncates its target table first: COPY INTO ... FORCE = TRUE is
 not idempotent on its own (it re-appends the same rows on every re-run,
@@ -26,6 +27,8 @@ if str(REPO_ROOT) not in sys.path:
 from config import (
     CONFEDERATION_SOURCE_PATH,
     GROUP_DRAW_SOURCE_PATH,
+    HISTORICAL_CONFEDERATION_SOURCE_PATH,
+    HISTORICAL_MATCH_SOURCE_PATH,
     MATCH_SOURCE_PATH,
     SHOOTOUT_SOURCE_PATH,
     VENUE_COORDINATES_SOURCE_PATH,
@@ -89,6 +92,13 @@ def main() -> None:
         load_file(cursor, GROUP_DRAW_SOURCE_PATH, "RAW.GROUP_DRAW", cfg.warehouse)
         load_file(cursor, CONFEDERATION_SOURCE_PATH, "RAW.TEAM_CONFEDERATION", cfg.warehouse)
         load_file(cursor, VENUE_COORDINATES_SOURCE_PATH, "RAW.VENUE_COORDINATES", cfg.warehouse)
+        load_file(cursor, HISTORICAL_MATCH_SOURCE_PATH, "RAW.HISTORICAL_MATCH", cfg.warehouse)
+        load_file(
+            cursor,
+            HISTORICAL_CONFEDERATION_SOURCE_PATH,
+            "RAW.HISTORICAL_TEAM_CONFEDERATION",
+            cfg.warehouse,
+        )
         conn.commit()
     finally:
         conn.close()
