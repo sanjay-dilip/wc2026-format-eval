@@ -16,10 +16,11 @@ Builds a Snowflake data pipeline for the 2026 FIFA World Cup: ingests
 match results, stage/group structure, and venue data from independently
 sourced and cited inputs; validates the data with automated, re-runnable
 checks; models it into a dimensional schema; derives a travel/rest mart
-from it; and extends the same fact table with a historical comparison
-baseline (2022, 1994). The analytical marts that actually answer the core
-question above (competitive balance, upset rate, confederation
-performance) are not built yet — see Status below.
+from it; extends the same fact table with a historical comparison baseline
+(2022, 1994); and sources each of those three tournaments' own FIFA World
+Ranking. The analytical marts that actually answer the core question above
+(competitive balance, upset rate, confederation performance) have written
+metric definitions but aren't built yet — see Status below.
 
 ## Status
 
@@ -46,14 +47,19 @@ Five Snowflake schemas, in dependency order:
 RAW          landed source files, as ingested, no transformation
 VALIDATION   data-quality checks, rejected records, quality summary
 CORE         dimensional model: dim_date, dim_group, dim_stage, dim_venue,
-             dim_confederation, dim_team, fact_match
-ANALYTICS    marts built on CORE (TEAM_TRAVEL_REST so far)
+             dim_confederation, dim_team, dim_tournament, fact_match,
+             team_tournament_ranking
+ANALYTICS    marts built on CORE (TEAM_TRAVEL_REST, TOURNAMENT_FORMAT_COMPARISON
+             so far — the 5 marts that answer the core question are next)
 AUDIT        load metadata: rows loaded, warehouse, duration
 ```
 
 `fact_match` is grain one-row-per-match: 104 rows for the 2026 tournament
-plus 116 historical comparison rows (2022, 1994), 220 total. Full schema
-diagram and column-level detail: `docs/architecture.md`.
+plus 116 historical comparison rows (2022, 1994), 220 total, spanning the
+3 tournaments in `dim_tournament`. `team_tournament_ranking` holds each
+team's FIFA World Ranking per tournament (grain: team × tournament, since
+a returning team's ranking differs by tournament — not a `dim_team`
+column). Full schema diagram and column-level detail: `docs/architecture.md`.
 
 ## Setup
 
@@ -110,7 +116,8 @@ config.py               Snowflake connection config + source file paths (env-dri
 data/
   raw/                   Source files, as pulled or independently compiled/cited
   processed/             Derived, reproducible outputs (e.g. the validated stage mapping)
-docs/                    Problem statement, architecture, decision log, build plan
+docs/                    Problem statement, architecture, decision log, build plan,
+                         data dictionary, mart metric definitions
 sql/
   raw/                    RAW schema + table DDL, numbered for run order
   validation/             VALIDATION schema DDL + per-check detection queries
