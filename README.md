@@ -15,10 +15,11 @@ scheduling fairness, relative to prior tournament formats.
 Builds a Snowflake data pipeline for the 2026 FIFA World Cup: ingests
 match results, stage/group structure, and venue data from independently
 sourced and cited inputs; validates the data with automated, re-runnable
-checks; models it into a dimensional schema; and derives a travel/rest
-mart from it. The analytical marts that actually answer the core question
-above (competitive balance, upset rate, confederation performance) are
-not built yet — see Status below.
+checks; models it into a dimensional schema; derives a travel/rest mart
+from it; and extends the same fact table with a historical comparison
+baseline (2022, 1994). The analytical marts that actually answer the core
+question above (competitive balance, upset rate, confederation
+performance) are not built yet — see Status below.
 
 ## Status
 
@@ -29,8 +30,9 @@ not built yet — see Status below.
 | 2 | Raw ingestion into Snowflake (`RAW` schema) | Done |
 | 3 | Data-quality validation layer (`VALIDATION` schema) | Done |
 | 4 | Dimensional model (`CORE` schema) | Done |
-| 7 | Venue coordinates + travel/rest mart (`ANALYTICS.TEAM_TRAVEL_REST`) | Done, pending a second-source coordinate cross-check |
-| 5, 6, 8, 9, 10, C | Historical comparison, rankings + core analytical marts, incremental-load demo, cross-account sharing, Power BI layer, consolidation | Not started |
+| 5 | Historical comparison layer (2022, 1994 alongside 2026; `ANALYTICS.TOURNAMENT_FORMAT_COMPARISON`) | Done |
+| 7 | Venue coordinates + travel/rest mart (`ANALYTICS.TEAM_TRAVEL_REST`) | Done, second-source coordinate cross-check complete (issue #13) |
+| 6, 8, 9, 10, C | Rankings + core analytical marts, incremental-load demo, cross-account sharing, Power BI layer, consolidation | Not started |
 
 Full build-by-build detail: `docs/build_plan.md`. Sourcing decisions and
 their rationale: `docs/decision_log.md`.
@@ -48,8 +50,9 @@ ANALYTICS    marts built on CORE (TEAM_TRAVEL_REST so far)
 AUDIT        load metadata: rows loaded, warehouse, duration
 ```
 
-`fact_match` is grain one-row-per-match (104 rows for the 2026
-tournament). Full schema diagram and column-level detail: `docs/architecture.md`.
+`fact_match` is grain one-row-per-match: 104 rows for the 2026 tournament
+plus 116 historical comparison rows (2022, 1994), 220 total. Full schema
+diagram and column-level detail: `docs/architecture.md`.
 
 ## Setup
 
@@ -84,6 +87,7 @@ Run from the repo root, in order (each step is idempotent — safe to
 re-run):
 
 ```bash
+python -m src.ingestion.fetch_historical_results  # fetch the full historical results dataset (not committed)
 python -m src.ingestion.setup_snowflake   # create schemas, tables, warehouse config
 python -m src.ingestion.load_raw          # load all RAW source files
 python -m src.core.build_core             # populate CORE dimensions + fact_match
@@ -125,6 +129,8 @@ tests/                    pytest suite + fixtures (including a deliberately bad-
 
 - **Match results**: `martj42/international_results` (CC0-licensed,
   historically maintained). See `docs/data_feasibility_report.md`, Source 1.
+  Also the source for Build 5's historical comparison tournaments (2022,
+  1994) — see `docs/decision_log.md`.
 - **Stage/group draw**: Yahoo Sports editorial coverage, manually
   transcribed into `data/raw/wc2026_group_draw.csv`. Single-sourced,
   pending a second independent cross-check.

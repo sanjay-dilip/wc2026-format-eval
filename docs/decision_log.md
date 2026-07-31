@@ -1,5 +1,155 @@
 # Decision Log — 2026 World Cup Format Evaluation
 
+## 2026-07-31 — Build 5: Historical Comparison Layer
+
+**Decision**: `CORE.FACT_MATCH` is extended with historical World Cup
+matches from **2022 (32-team format)** and **1994 (24-team format)**,
+alongside 2026 (48-team format) - same grain, one new `CORE.DIM_TOURNAMENT`
+dimension, per `docs/architecture.md`'s original plan ("historical
+tournaments added in Build 5 extend the same grain, not a different one").
+Not "all of World Cup history" - two specific, deliberately chosen prior
+tournaments, one per format era `docs/build_plan.md` names (32-team,
+24-team), satisfying the "2-3 prior World Cups" success criteria without
+open-ended scope.
+
+**Why 2022 and 1994, not others**: Maximizes team-name overlap with the
+already-validated 2026 confederation crosswalk (26/32 teams and 15/24
+teams respectively already resolve via `wc2026_confederation_map.csv`),
+minimizing new crosswalk entries needed while still covering two distinct
+non-48-team formats. A third, older tournament (16-team era, e.g. 1970)
+was considered and rejected for this pass: `build_plan.md`'s own wording
+only names 32/24/48-team formats, and 1970 specifically was found (see
+below) to have a data-quality issue worth flagging separately rather than
+folding into this decision under time pressure.
+
+**Fetch script gap closed**: `data/raw/international_results_full.csv` has
+been gitignored since Build 0 with a comment expecting a fetch script -
+none existed until now. `src/ingestion/fetch_historical_results.py` pulls
+`results.csv` from `raw.githubusercontent.com/martj42/international_results`
+directly, validates the header shape and a row-count floor (49,520, the
+count confirmed at Build 0), and writes it to `data/raw/`. Verified by
+deleting the local file and re-running the script from nothing:
+`Wrote 49520 data rows to ...international_results_full.csv`. Before this,
+`src/transform/build_stage_mapping.py` and `tests/test_stage_mapping.py`
+silently depended on a manually-placed file with no way to regenerate it
+on a fresh clone - a real reproducibility gap, not a hypothetical one.
+
+**Team/confederation name standardization - checked, not assumed**:
+Compared every team name in the 2022 and 1994 filtered match data against
+`wc2026_confederation_map.csv`'s spellings directly (e.g. confirmed
+"South Korea" is used consistently across both eras, not "Korea
+Republic"). Zero spelling mismatches found for the 41 overlapping team
+appearances. The 14 teams with no 2026 presence (Bolivia, Bulgaria,
+Cameroon, Costa Rica, Denmark, Greece, Italy, Nigeria, Poland, Republic of
+Ireland, Romania, Russia, Serbia, Wales) got a new crosswalk file,
+`data/raw/wc_historical_confederation_map.csv`, compiled the same way as
+Build 4's 2026 crosswalk (known, stable FIFA confederation membership, not
+scraped) - checked exactly against the historical match data's team list:
+zero missing, zero extra.
+
+**A retroactive-naming issue was found and is why 1970 was excluded, not
+silently worked around**: Directly inspecting 1970 World Cup rows in
+`international_results_full.csv` showed the Soviet Union recorded as
+`"Russia"` and West Germany recorded as `"Germany"` - the source dataset
+appears to retroactively apply the modern successor state's name to some
+historical political entities rather than the name that existed at the
+time. Neither 2022 nor 1994 exhibits this (USSR dissolved in 1991,
+Germany reunified in 1990 - both already used their real, current-at-the-
+time names in those years' data). This is a genuine data-quality finding
+about the source, not a bug in this project's code - flagged here rather
+than silently trusted, and is the concrete reason a 16-team-era tournament
+was left out of this pass rather than a scope-convenience excuse.
+
+**Format differences - explicit, not glossed over**: Historical rows have
+`stage_id = NULL` and `venue_id = NULL` in `CORE.FACT_MATCH` - no verified
+stage/round-label source exists for 2022 or 1994 in this project (the
+Yahoo Sports crosswalk Build 0 used is 2026-specific), and no
+venue-coordinate research has been done for non-2026 stadiums (a separate,
+much larger undertaking, out of scope here - parallel to Build 4's
+`went_to_et`/`neutral_site` reasoning). `CORE.FACT_MATCH.stage_id` and
+`.venue_id` were changed from `NOT NULL` to nullable to allow this
+(`ALTER TABLE ... ALTER COLUMN ... DROP NOT NULL`), and the orphaned-FK
+check in `src/core/build_core.py` was updated to only flag a NULL FK as
+orphaned when the row's tournament requires it to be populated (2026 rows
+still enforced, historical rows exempted on this basis alone - see that
+file's `FACT_MATCH_FK_CHECKS`).
+`dim_team.group_id` is also `NULL` for the 14 historical-only teams (no
+2026 group applies to them) - the existing `LEFT JOIN` in
+`06_dim_team.sql` already handled this correctly with no change needed.
+`CORE.DIM_TOURNAMENT.team_count` is computed from `COUNT(DISTINCT team)`
+against the actual loaded matches per tournament, not hardcoded, so it
+can't silently drift from the data.
+
+**The comparison metric itself**: `ANALYTICS.TOURNAMENT_FORMAT_COMPARISON`
+(a view, not a populated table like `TEAM_TRAVEL_REST` - it's a plain
+`GROUP BY` over `fact_match`, always current, no separate idempotency
+mechanism needed) computes `match_count`, `avg_goals_per_match`,
+`pct_one_goal_margin`, `pct_drawn_after_et`, and
+`shootout_decided_matches` identically across all three tournaments -
+deliberately restricted to metrics derivable from score columns alone, no
+ranking baseline (Build 6, still gated on rankings sourcing) and no
+stage/group breakdown (not populated for historical rows, per above).
+Full metric definitions in the view's own SQL comment
+(`sql/analytics/02_create_tournament_format_comparison_view.sql`).
+
+**A real bug found and fixed along the way**: The first version of
+`sql/core/populate/01_dim_date.sql` (extending `dim_date` to cover three
+separate tournament date windows) used a plain comma cross join between
+the 3-row tournament-range relation and `TABLE(GENERATOR(ROWCOUNT => 60))`.
+Confirmed directly this does **not** re-run the generator per outer row in
+Snowflake - `SEQ4()` came out round-robin-distributed across all 3 rows
+instead of restarting at 0 for each one, producing dates strided by 3 and
+silently dropping most of the intended range (`dim_date` landed at 32 rows
+instead of the expected 99, and `fact_match`'s 2026 insert - which joins
+through `dim_date` - dropped to 35 rows instead of 104). Fixed by
+rewriting the generator join as a `LATERAL` subquery, which forces
+per-row evaluation; verified by re-running and getting the expected 99
+`dim_date` rows and 104+64+52=220 `fact_match` rows. See
+`sql/core/populate/01_dim_date.sql`'s own comment for the mechanism.
+
+**A second real bug found and fixed**: `ANALYTICS.TEAM_TRAVEL_REST`'s
+`LAG()` window (`sql/analytics/populate/01_team_travel_rest.sql`) was
+partitioned by `team_id` alone. Once `fact_match` held matches from three
+tournaments, a team appearing in more than one (e.g. Brazil in 1994, 2022,
+and 2026) got its "previous match" computed across tournament boundaries -
+first run after this build's changes showed rows-with-no-previous-match
+dropping from the expected 48 to 19, and rows-with-a-previous-match-but-
+missing-distance/rest rising from the expected 0 to 29 (a previous match
+from a different tournament has `venue_id = NULL`, per above, so no
+distance is computable). Fixed by partitioning by `(team_id,
+tournament_id)` instead. Re-ran and confirmed the exact Build 7 baseline
+restored: 208 rows, 48 tournament-openers, 0 unexpected NULLs,
+`distance_km` 0-4302.7 km, `rest_days` 3-8 - identical to Build 7's
+original figures, confirming this mart's 2026 output is unchanged by
+Build 5, just computed correctly now that other tournaments share the
+fact table.
+
+**Validation performed, against the live account, not assumed**:
+`CORE.DIM_DATE` = 99 rows (39 for 2026 + 29 for 2022 + 31 for 1994, zero
+overlap), `CORE.DIM_TEAM` = 62 rows (48 2026 teams + 14 historical-only,
+zero teams with a NULL `confederation_id`, exactly 14 with a NULL
+`group_id`), `CORE.DIM_TOURNAMENT` = 3 rows, `CORE.FACT_MATCH` = 220 rows
+(104 + 64 + 52), 0 orphaned FKs on every checked column (`tournament_id`
+included, `stage_id`/`venue_id` checked NULL-tolerantly). Confirmed
+idempotent by running `src/core/build_core.py` twice in a row with
+identical results both times.
+`ANALYTICS.TOURNAMENT_FORMAT_COMPARISON` queried live:
+
+| tournament_year | team_count | format_label | match_count | avg_goals_per_match | pct_one_goal_margin | pct_drawn_after_et | shootout_decided_matches |
+|---|---|---|---|---|---|---|---|
+| 1994 | 24 | 24-team | 52 | 2.71 | 46.2 | 21.2 | 3 |
+| 2022 | 32 | 32-team | 64 | 2.69 | 37.5 | 23.4 | 5 |
+| 2026 | 48 | 48-team | 104 | 2.96 | 33.7 | 23.1 | 4 |
+
+Shootout counts (3 for 1994, 5 for 2022) were independently cross-checked
+against `shootouts_full.csv` by hand for those years' actual World Cup
+knockout matches (Bulgaria over Mexico, Sweden over Romania, Brazil over
+Italy for 1994; Japan-Croatia, Morocco-Spain, Croatia-Brazil,
+Netherlands-Argentina, and Argentina-France for 2022) and matched real
+tournament history, not just internal consistency.
+
+---
+
 ## 2026-07-31 — Issue #13: venue coordinates cross-checked against a second independent source
 
 **Decision**: `data/raw/wc2026_venue_coordinates.csv` now carries a second,

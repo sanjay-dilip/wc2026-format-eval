@@ -13,7 +13,7 @@ below is implemented in Snowflake yet — that starts at Build 2. See
 | `RAW`        | Landed source files, as ingested, no transformation                    |
 | `VALIDATION` | Validation checks, rejected-records table, data-quality summary        |
 | `CORE`       | Dimensional model — `dim_*` and `fact_match`, validated data only       |
-| `ANALYTICS`  | Marts built on `CORE` (Build 6 onward): competitive balance, group difficulty, upset rate, confederation performance, expected-vs-actual |
+| `ANALYTICS`  | Marts built on `CORE`: `TEAM_TRAVEL_REST` (Build 7), `TOURNAMENT_FORMAT_COMPARISON` (Build 5); competitive balance, group difficulty, upset rate, confederation performance, expected-vs-actual still to come (Build 6) |
 | `AUDIT`      | Load metadata — rows loaded, warehouse used, duration, credits         |
 
 `SHARED` is dropped from the original list. It only has a reason to exist if
@@ -27,8 +27,10 @@ this document.
 ## Dimensional model
 
 Grain: `fact_match` is one row per match. 104 rows for the 2026 tournament
-(Build 0's validated count); historical tournaments added in Build 5 extend
-the same grain, not a different one.
+(Build 0's validated count); Build 5 extends this to 220 rows by adding
+2022 (64 matches) and 1994 (52 matches) as a historical comparison
+baseline, at the same grain, not a separate fact table — each row now
+carries a `tournament_id` FK.
 
 ```text
                         dim_date
@@ -36,9 +38,10 @@ the same grain, not a different one.
                             |
   dim_venue --- fact_match --- dim_stage
                  |match_id (PK)|
+                 |tournament_id+---> dim_tournament
                  |date_id (FK) |
-                 |stage_id(FK) |
-                 |venue_id(FK) |
+                 |stage_id(FK,nullable) |
+                 |venue_id(FK,nullable) |
                  |home_team_id-+---> dim_team ---> dim_group
                  |away_team_id-+---> dim_team ---> dim_confederation
                  |home_score   |
@@ -51,16 +54,18 @@ the same grain, not a different one.
 
 | Table              | Key fields (beyond PK)                                                        | Notes                                                                 |
 | ------------------ | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
-| `dim_team`          | `team_name` (canonical spelling), `group_id` (FK), `confederation_id` (FK), `fifa_ranking` | `fifa_ranking` nullable until Build 6 closes the rankings gap — not a placeholder guess |
+| `dim_team`          | `team_name` (canonical spelling), `group_id` (FK), `confederation_id` (FK), `fifa_ranking` | `fifa_ranking` nullable until Build 6 closes the rankings gap — not a placeholder guess. 62 rows as of Build 5: the 2026 48 plus 14 teams that only appear in the historical comparison tournaments (`group_id` NULL for those 14 — no 2026 group applies) |
 | `dim_group`         | `group_letter`                                                                | 12 groups, 2026-specific; sourced from `data/raw/wc2026_group_draw.csv` |
-| `dim_stage`         | `stage_name`, `stage_order`, `date_window_start`, `date_window_end`           | Group Stage, R32, R16, QF, SF, 3rd Place, Final — from Build 0's validated stage mapping |
-| `dim_venue`         | `venue_name`, `city`, `country`, `latitude`, `longitude`                      | Lat/long carried as `NULL` until Build 7's independent re-verification — not copied from the unlicensed source (`docs/decision_log.md`) |
+| `dim_stage`         | `stage_name`, `stage_order`, `date_window_start`, `date_window_end`           | Group Stage, R32, R16, QF, SF, 3rd Place, Final — from Build 0's validated stage mapping. 2026-specific; historical `fact_match` rows carry `stage_id = NULL` (no verified stage/round source for those years — `docs/decision_log.md`) |
+| `dim_venue`         | `venue_name`, `city`, `country`, `latitude`, `longitude`                      | 2026-specific, independently sourced and cross-checked (`docs/decision_log.md`, Build 7 + issue #13); historical `fact_match` rows carry `venue_id = NULL` (no venue research done for non-2026 stadiums) |
 | `dim_confederation` | `confederation_name`                                                          | AFC, CAF, CONCACAF, CONMEBOL, OFC, UEFA                                |
-| `dim_date`          | `full_date`, `year`, `month`, `day`, `day_of_week`                            | Standard date dimension, not 2026-specific — supports Build 5 historical comparison |
-| `fact_match`        | see diagram                                                                   | `went_to_et` / `went_to_so` flags and nullable `so_winner_id` carry the FT-vs-ET-vs-shootout distinction documented in the feasibility report, rather than collapsing it into a single score field |
+| `dim_date`          | `full_date`, `year`, `month`, `day`, `day_of_week`                            | 99 rows as of Build 5: the 2026 tournament's own date window plus each historical comparison tournament's own window, unioned — not one span covering the gap years too |
+| `dim_tournament`    | `tournament_year`, `team_count`, `format_label`                              | Build 5. One row per tournament this project computes metrics for — 2026, 2022, 1994. `team_count` computed from the loaded matches, not hardcoded |
+| `fact_match`        | see diagram                                                                   | `went_to_et` / `went_to_so` flags and nullable `so_winner_id` carry the FT-vs-ET-vs-shootout distinction documented in the feasibility report, rather than collapsing it into a single score field. `stage_id`/`venue_id` nullable as of Build 5 (see above) |
 
-Foreign keys: `fact_match.date_id → dim_date`, `.stage_id → dim_stage`,
-`.venue_id → dim_venue`, `.home_team_id` / `.away_team_id` / `.so_winner_id
+Foreign keys: `fact_match.date_id → dim_date`, `.tournament_id →
+dim_tournament`, `.stage_id → dim_stage` (nullable), `.venue_id →
+dim_venue` (nullable), `.home_team_id` / `.away_team_id` / `.so_winner_id
 → dim_team`. `dim_team.group_id → dim_group`, `dim_team.confederation_id →
 dim_confederation`.
 
