@@ -48,6 +48,7 @@ POPULATE_ORDER = [
     ("06_dim_team.sql", "CORE.DIM_TEAM"),
     ("09_dim_tournament.sql", "CORE.DIM_TOURNAMENT"),
     ("07_fact_match.sql", "CORE.FACT_MATCH"),
+    ("11_team_tournament_ranking.sql", "CORE.TEAM_TOURNAMENT_RANKING"),
 ]
 
 # fact_match FK column -> the dimension table it must resolve against.
