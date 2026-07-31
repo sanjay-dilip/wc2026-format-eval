@@ -1,5 +1,72 @@
 # Decision Log — 2026 World Cup Format Evaluation
 
+## 2026-07-31 — Issue #13: venue coordinates cross-checked against a second independent source
+
+**Decision**: `data/raw/wc2026_venue_coordinates.csv` now carries a second,
+independently-sourced coordinate per venue (`second_latitude`,
+`second_longitude`, `second_source_url`) alongside the original
+Wikipedia-sourced value, plus a computed `cross_check_distance_m` column —
+the great-circle distance in meters between the two. `RAW.VENUE_COORDINATES`
+was extended to match (4 new columns via `ALTER TABLE ... ADD COLUMN IF NOT
+EXISTS`, not a drop/recreate, so `CREATE TABLE IF NOT EXISTS` still holds
+for a fresh account) and reloaded.
+
+**Second source used**: OpenStreetMap, queried via the Nominatim geocoding
+API (`nominatim.openstreetmap.org/search`), one query per venue by stadium
+name + city. OSM is independently useful here specifically because its
+stadium-location data is community-surveyed/mapped, not derived from
+Wikipedia's infobox coordinates — satisfies the issue's requirement of "not
+another page that itself cites Wikipedia."
+
+**Cross-check result**: All 16 venues agree with the original Wikipedia
+value well inside the stated tolerance ("a few hundred meters is
+expected/harmless"). Distances (haversine, computed locally, not eyeballed):
+
+| City | Distance (m) |
+|---|---|
+| East Rutherford | 2.7 |
+| Mexico City | 3.9 |
+| Toronto | 4.1 |
+| Vancouver | 5.3 |
+| Guadalupe | 6.7 |
+| Philadelphia | 8.9 |
+| Arlington | 9.3 |
+| Kansas City | 10.7 |
+| Houston | 15.6 |
+| Seattle | 16.6 |
+| Miami Gardens | 17.9 |
+| Foxborough | 19.0 |
+| Zapopan | 22.7 |
+| Santa Clara | 31.0 |
+| Inglewood | 45.3 |
+| Atlanta | 80.2 |
+
+Largest disagreement (Atlanta, 80.2 m) is still two orders of magnitude
+below the stated tolerance and is consistent with the two sources pinning
+slightly different points on the same stadium footprint (e.g. center of
+the building vs. a named entrance) — not a sourcing error. No venue
+required a decision about resolving a larger disagreement; none arose.
+
+**No CORE correction needed**: Since every original (Wikipedia) value is
+confirmed accurate to within tens of meters, `CORE.DIM_VENUE`'s existing
+lat/long values were left as-is — re-verified, not re-derived. Re-ran
+`src/core/build_core.py` and `src/geospatial/build_travel_rest.py` anyway,
+per the issue's explicit validation requirement, against the live account:
+`CORE.DIM_VENUE` = 16 rows (unchanged), `fact_match` = 104 rows (unchanged),
+0 orphaned FKs, `ANALYTICS.TEAM_TRAVEL_REST` = 208 rows with 48
+no-previous-match rows and 0 rows with a previous match but a missing
+distance/rest value — identical to Build 7's original figures, confirming
+this cross-check didn't change the numbers, only their evidentiary
+strength.
+
+**Status update**: Open blocker #3 (venue coordinates) is now fully
+resolved — independently sourced *and* independently cross-checked, no
+longer single-sourced to Wikipedia. Group draw and confederation crosswalk
+(blockers #2 and #5) remain single-sourced and unaffected by this issue,
+per its explicit "not in scope" note.
+
+---
+
 ## 2026-07-30 — Build 7: rest-day definition and time zone handling, decided before calculating
 
 **Decision**: `rest_days` in the travel/rest mart is `DATEDIFF('day',
@@ -78,15 +145,17 @@ repo's confirmed fabrication.
   `RAW.MATCH` already records — these are real suburb/city distinctions,
   not naming inconsistencies like Dallas/Arlington.
 
-**Not yet done**: A second independent source per venue (the same
-standard the group draw and confederation crosswalk are held to,
-pending). Coordinates are precise enough for the intended use (travel
+**At the time of this entry, not yet done**: A second independent source
+per venue (the same standard the group draw and confederation crosswalk
+are held to). Coordinates are precise enough for the intended use (travel
 distance between consecutive venues) but each one is currently backed by
 a single source. Loading these into `dim_venue` and building the
 travel-distance mart is Build 7's implementation, done separately from
 this research pass. Depended on PR #10 (Dallas/Arlington fix, merged
 2026-07-30) so coordinates land on the correctly-deduped 16-row
-`dim_venue`, not a 17-row table with a phantom duplicate.
+`dim_venue`, not a 17-row table with a phantom duplicate. **Resolved
+2026-07-31, issue #13** — see that entry above for the second-source
+cross-check.
 
 ---
 
