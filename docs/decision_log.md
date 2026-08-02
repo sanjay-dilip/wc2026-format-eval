@@ -1,5 +1,70 @@
 # Decision Log — 2026 World Cup Format Evaluation
 
+## 2026-08-02 — Issue #37: Tactical efficiency theme — final decision: NO-GO
+
+**Decision**: Cut the tactical efficiency theme entirely — both its
+original event-level form (xG, pressures, possession value) and the
+shallower aggregate box-score substitute (shots, possession via FIFA's own
+match-centre pages) that `docs/problem_statement.md` had left gated since
+2026-07-21. This is a final decision, not another downgrade-and-revisit:
+the theme is out of scope for this project, full stop, and won't be
+re-opened without new evidence.
+
+**Why re-checked now rather than left gated**: The 2026-07-21 assessment
+predates the tournament finishing (2026-07-19). Both original obstacles
+(no StatsBomb 2026 entry, FIFA.com inaccessible) were provisional at the
+time — worth re-checking against real 2026 data before deciding, not
+assuming they'd resolve themselves by the time Build 10 needed a final
+scope.
+
+**Checked live, not assumed unchanged**:
+- **StatsBomb open-data `competitions.json`**: fetched directly
+  (`raw.githubusercontent.com/statsbomb/open-data/master/data/competitions.json`).
+  Still no 2026 FIFA World Cup entry — most recent men's World Cup present
+  is still 2022 (season_id 106). Confirmed dead end, unchanged from the
+  original finding despite the tournament now being complete.
+- **FIFA.com's own pages**: fetched two different 2026-specific pages
+  directly — the final's match-centre page
+  (`fifa.com/en/match-centre/match/17/285023/289292/400021543`) and a
+  dedicated post-final stats article
+  (`fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/spain-argentina-final-statistics`).
+  Both returned empty/JS-only shell content — same technical
+  inaccessibility as the original 2026-07-21 finding, unchanged.
+- **New sources checked that didn't exist (or weren't checked) in the
+  original pass**: `mominullptr/FIFA-World-Cup-2026-Dataset` (the same
+  repo already disqualified in `docs/data_feasibility_report.md`, Source
+  3, for fabricated data and no LICENSE file) still surfaces as the only
+  dataset claiming full shots/possession/xG coverage across all 104
+  matches — same disqualification applies, nothing changed there either.
+  `onsidearena.com/data` (CC-BY-4.0, genuinely free/licensed) was checked
+  directly and confirmed to cover only fixtures and win-probability
+  predictions, not actual match statistics — doesn't fill the gap.
+  Editorial coverage of individual marquee matches (Opta/theanalyst.com,
+  ESPN, WhoScored) does report real shots/possession/xG for high-profile
+  games like the final, but this is scattered per-article content for a
+  handful of matches, not a structured, licensable, systematic source
+  covering all 104 matches the way `docs/data_feasibility_report.md`'s
+  reliability bar requires for a source of record.
+
+**Net conclusion**: No free, reputable, systematic, licensable source for
+tactical efficiency data — at any grain — exists for the 2026 tournament,
+before or after it concluded. This isn't a temporary gap that resolves
+with more waiting; the tournament is over and the gap is still there.
+
+**Action taken**: `docs/problem_statement.md`'s "Gated / conditional
+themes" section updated — tactical efficiency's entry removed from the
+gated list (it's resolved, not still pending) and the theme's absence from
+the core question is now stated as final. `CONTEXT.md`'s Open blockers
+list updated: blocker #4 marked resolved (as a no-go, not a data gap).
+
+**Status update**: Blockers #2, #3, #4, and #5 are now closed. Blocker #1
+(FIFA rankings sourcing) was flagged this session as likely already
+resolved by Build 6 Part 1 but was not re-verified as part of this issue —
+see `CONTEXT.md`'s Open blockers list. No other open sourcing or scoping
+gaps remain before Build 10.
+
+---
+
 ## 2026-08-01 — Build 9: Secure Data Share implementation
 
 **Decision**: `SHARED` (new schema, dropped from the original list until

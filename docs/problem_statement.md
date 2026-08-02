@@ -36,14 +36,22 @@ Build 0 actually confirmed is buildable from real, licensable data.
 
 ## Gated / conditional themes (not part of the core question, not dropped)
 
-- **Tactical efficiency at a shallower grain** (aggregate box-score stats —
-  shots, possession — if FIFA's own match-centre pages can be used as a
-  substitute source): go/no-go not yet decided, carried forward from Build 0.
 - **Travel/rest burden**: gated on independent venue-coordinate
   re-verification (Build 7) — currently only seen in an unlicensed,
   partially-fabricated repo and not reusable as-is.
 - **Cross-account data sharing**: gated on a written Build 9 go/no-go, not
   assumed necessary for the core question.
+
+## Themes cut, not gated
+
+- **Tactical efficiency** (event-level xG/pressures/possession value, and
+  the shallower aggregate box-score substitute both considered): final
+  **no-go**, `docs/decision_log.md` 2026-08-02 "Issue #37" entry.
+  Re-checked after the tournament concluded (2026-07-19) specifically to
+  confirm this wasn't a temporary gap — StatsBomb's open tier still has no
+  2026 entry, FIFA's own pages are still technically inaccessible, and no
+  free/licensed/systematic alternative was found. Out of scope for this
+  project; won't be revisited without new evidence.
 
 ## Method
 
