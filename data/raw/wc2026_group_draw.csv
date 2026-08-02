@@ -1,49 +1,49 @@
-team,group_letter
-Mexico,A
-South Africa,A
-South Korea,A
-Czech Republic,A
-Canada,B
-Bosnia and Herzegovina,B
-Qatar,B
-Switzerland,B
-Brazil,C
-Morocco,C
-Haiti,C
-Scotland,C
-United States,D
-Paraguay,D
-Australia,D
-Turkey,D
-Germany,E
-Curaçao,E
-Ivory Coast,E
-Ecuador,E
-Netherlands,F
-Japan,F
-Sweden,F
-Tunisia,F
-Belgium,G
-Egypt,G
-Iran,G
-New Zealand,G
-Spain,H
-Cape Verde,H
-Saudi Arabia,H
-Uruguay,H
-France,I
-Senegal,I
-Iraq,I
-Norway,I
-Argentina,J
-Algeria,J
-Austria,J
-Jordan,J
-Portugal,K
-DR Congo,K
-Uzbekistan,K
-Colombia,K
-England,L
-Croatia,L
-Ghana,L
-Panama,L
+team,group_letter,second_source_url,cross_check_match
+Mexico,A,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_A,TRUE
+South Africa,A,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_A,TRUE
+South Korea,A,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_A,TRUE
+Czech Republic,A,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_A,TRUE
+Canada,B,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_B,TRUE
+Bosnia and Herzegovina,B,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_B,TRUE
+Qatar,B,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_B,TRUE
+Switzerland,B,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_B,TRUE
+Brazil,C,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_C,TRUE
+Morocco,C,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_C,TRUE
+Haiti,C,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_C,TRUE
+Scotland,C,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_C,TRUE
+United States,D,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_D,TRUE
+Paraguay,D,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_D,TRUE
+Australia,D,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_D,TRUE
+Turkey,D,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_D,TRUE
+Germany,E,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_E,TRUE
+Curaçao,E,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_E,TRUE
+Ivory Coast,E,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_E,TRUE
+Ecuador,E,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_E,TRUE
+Netherlands,F,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_F,TRUE
+Japan,F,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_F,TRUE
+Sweden,F,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_F,TRUE
+Tunisia,F,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_F,TRUE
+Belgium,G,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_G,TRUE
+Egypt,G,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_G,TRUE
+Iran,G,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_G,TRUE
+New Zealand,G,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_G,TRUE
+Spain,H,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_H,TRUE
+Cape Verde,H,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_H,TRUE
+Saudi Arabia,H,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_H,TRUE
+Uruguay,H,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_H,TRUE
+France,I,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_I,TRUE
+Senegal,I,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_I,TRUE
+Iraq,I,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_I,TRUE
+Norway,I,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_I,TRUE
+Argentina,J,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_J,TRUE
+Algeria,J,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_J,TRUE
+Austria,J,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_J,TRUE
+Jordan,J,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_J,TRUE
+Portugal,K,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_K,TRUE
+DR Congo,K,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_K,TRUE
+Uzbekistan,K,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_K,TRUE
+Colombia,K,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_K,TRUE
+England,L,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_L,TRUE
+Croatia,L,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_L,TRUE
+Ghana,L,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_L,TRUE
+Panama,L,https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_L,TRUE
