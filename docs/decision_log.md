@@ -1,5 +1,67 @@
 # Decision Log — 2026 World Cup Format Evaluation
 
+## 2026-08-01 — Build 9 go/no-go: GO, bounded scope
+
+**Decision**: Build 9 (Cross-Account Sharing) goes ahead, scoped strictly
+to what `docs/build_plan.md` already specifies - a Secure Data Share from
+the primary account to the secondary trial account, plus the secure views
+needed to expose it, plus a verified-not-assumed check that `RAW` is
+inaccessible from the consumer side. Nothing broader.
+
+**The 5-question test** (`docs/architecture.md`'s own method, applied here
+rather than skipped):
+
+- **What problem does it solve?** Demonstrates producer/consumer
+  separation - a real Snowflake-specific capability (governed data
+  distribution without copying or replicating data) that nothing else in
+  this project shows. The `RAW`/`VALIDATION`/`CORE`/`ANALYTICS`/`AUDIT`
+  schema split already demonstrates *internal* governance (RBAC gate, not
+  yet built); this is the only build that demonstrates *external*
+  governance - a second account getting curated access without ever
+  seeing ingestion internals.
+- **Why not something simpler?** A second `.env`-configured connection to
+  the same account, or a plain cross-database query, wouldn't demonstrate
+  account-level isolation at all - the entire point is that the consumer
+  is a genuinely separate account with its own credentials, unable to see
+  `RAW` even if it tried. Confirmed today: both accounts are independently
+  reachable, `AWS_US_WEST_2` on both sides (verified live via
+  `CURRENT_REGION()`, not assumed from memory) - so this doesn't need
+  Snowflake's replication feature either, which would be new complexity
+  this project has no other reason to touch.
+- **What does it cost?** Negligible. Creating a share is a metadata
+  operation, not a compute job. Consumer-side queries run against the
+  secondary account's own `COMPUTE_WH` (already exists, confirmed today),
+  not the primary's - no additional draw on the primary trial's credit
+  balance beyond the few statements needed to create the share and secure
+  views.
+- **How is it demonstrated?** The build plan's own success criteria: the
+  consumer account runs BI-shaped queries against the shared object(s)
+  successfully, and a direct attempt to query `RAW` from the consumer
+  account is actually attempted and confirmed to fail - not assumed
+  hidden because it wasn't granted.
+- **How is it tested?** Same pattern as every other build: a script run
+  against both live accounts, output pasted, not described. Failure of
+  the "`RAW` is inaccessible" check is the one result this build cannot
+  silently pass through - if it can be queried, that's a real finding,
+  not a footnote.
+
+**Why now, not deferred again**: This build was previously flagged as
+at-risk specifically because the second account didn't exist yet. That
+blocker is gone - connection details were gathered and independently
+verified today (both accounts on `AWS_US_WEST_2`, confirmed via live
+`CURRENT_REGION()` query on each, not just the account-creation-time
+memory). The project is also running ahead of schedule at this point, so
+there's real slack to absorb this build without crowding out what's still
+to come.
+
+**Explicitly out of scope, so this doesn't grow past what earns its
+complexity**: no new analytical marts on the consumer side (it queries
+what the share exposes, nothing new is computed there), no attempt to
+make the share bidirectional, no replication (not needed - same region),
+no additional roles beyond what's needed to own/consume the share.
+
+---
+
 ## 2026-08-01 — Build 8: incremental load via Streams + Tasks, compared by natural key not match_id
 
 **Decision**: `RAW.MATCH_STREAM` (Stream on `RAW.MATCH`) feeds
