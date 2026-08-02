@@ -1,15 +1,15 @@
-team,confederation_name
-Bolivia,CONMEBOL
-Bulgaria,UEFA
-Cameroon,CAF
-Costa Rica,CONCACAF
-Denmark,UEFA
-Greece,UEFA
-Italy,UEFA
-Nigeria,CAF
-Poland,UEFA
-Republic of Ireland,UEFA
-Romania,UEFA
-Russia,UEFA
-Serbia,UEFA
-Wales,UEFA
+team,confederation_name,second_source_url,cross_check_match
+Bolivia,CONMEBOL,https://en.wikipedia.org/wiki/CONMEBOL,TRUE
+Bulgaria,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Cameroon,CAF,https://en.wikipedia.org/wiki/Confederation_of_African_Football,TRUE
+Costa Rica,CONCACAF,https://en.wikipedia.org/wiki/CONCACAF,TRUE
+Denmark,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Greece,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Italy,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Nigeria,CAF,https://en.wikipedia.org/wiki/Confederation_of_African_Football,TRUE
+Poland,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Republic of Ireland,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Romania,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Russia,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Serbia,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Wales,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE

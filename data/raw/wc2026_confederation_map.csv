@@ -1,49 +1,49 @@
-team,confederation_name
-Mexico,CONCACAF
-South Africa,CAF
-South Korea,AFC
-Czech Republic,UEFA
-Canada,CONCACAF
-Bosnia and Herzegovina,UEFA
-Qatar,AFC
-Switzerland,UEFA
-Brazil,CONMEBOL
-Morocco,CAF
-Haiti,CONCACAF
-Scotland,UEFA
-United States,CONCACAF
-Paraguay,CONMEBOL
-Australia,AFC
-Turkey,UEFA
-Germany,UEFA
-Curaçao,CONCACAF
-Ivory Coast,CAF
-Ecuador,CONMEBOL
-Netherlands,UEFA
-Japan,AFC
-Sweden,UEFA
-Tunisia,CAF
-Belgium,UEFA
-Egypt,CAF
-Iran,AFC
-New Zealand,OFC
-Spain,UEFA
-Cape Verde,CAF
-Saudi Arabia,AFC
-Uruguay,CONMEBOL
-France,UEFA
-Senegal,CAF
-Iraq,AFC
-Norway,UEFA
-Argentina,CONMEBOL
-Algeria,CAF
-Austria,UEFA
-Jordan,AFC
-Portugal,UEFA
-DR Congo,CAF
-Uzbekistan,AFC
-Colombia,CONMEBOL
-England,UEFA
-Croatia,UEFA
-Ghana,CAF
-Panama,CONCACAF
+team,confederation_name,second_source_url,cross_check_match
+Mexico,CONCACAF,https://en.wikipedia.org/wiki/CONCACAF,TRUE
+South Africa,CAF,https://en.wikipedia.org/wiki/Confederation_of_African_Football,TRUE
+South Korea,AFC,https://en.wikipedia.org/wiki/Asian_Football_Confederation,TRUE
+Czech Republic,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Canada,CONCACAF,https://en.wikipedia.org/wiki/CONCACAF,TRUE
+Bosnia and Herzegovina,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Qatar,AFC,https://en.wikipedia.org/wiki/Asian_Football_Confederation,TRUE
+Switzerland,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Brazil,CONMEBOL,https://en.wikipedia.org/wiki/CONMEBOL,TRUE
+Morocco,CAF,https://en.wikipedia.org/wiki/Confederation_of_African_Football,TRUE
+Haiti,CONCACAF,https://en.wikipedia.org/wiki/CONCACAF,TRUE
+Scotland,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+United States,CONCACAF,https://en.wikipedia.org/wiki/CONCACAF,TRUE
+Paraguay,CONMEBOL,https://en.wikipedia.org/wiki/CONMEBOL,TRUE
+Australia,AFC,https://en.wikipedia.org/wiki/Asian_Football_Confederation,TRUE
+Turkey,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Germany,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Curaçao,CONCACAF,https://en.wikipedia.org/wiki/CONCACAF,TRUE
+Ivory Coast,CAF,https://en.wikipedia.org/wiki/Confederation_of_African_Football,TRUE
+Ecuador,CONMEBOL,https://en.wikipedia.org/wiki/CONMEBOL,TRUE
+Netherlands,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Japan,AFC,https://en.wikipedia.org/wiki/Asian_Football_Confederation,TRUE
+Sweden,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Tunisia,CAF,https://en.wikipedia.org/wiki/Confederation_of_African_Football,TRUE
+Belgium,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Egypt,CAF,https://en.wikipedia.org/wiki/Confederation_of_African_Football,TRUE
+Iran,AFC,https://en.wikipedia.org/wiki/Asian_Football_Confederation,TRUE
+New Zealand,OFC,https://en.wikipedia.org/wiki/Oceania_Football_Confederation,TRUE
+Spain,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Cape Verde,CAF,https://en.wikipedia.org/wiki/Confederation_of_African_Football,TRUE
+Saudi Arabia,AFC,https://en.wikipedia.org/wiki/Asian_Football_Confederation,TRUE
+Uruguay,CONMEBOL,https://en.wikipedia.org/wiki/CONMEBOL,TRUE
+France,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Senegal,CAF,https://en.wikipedia.org/wiki/Confederation_of_African_Football,TRUE
+Iraq,AFC,https://en.wikipedia.org/wiki/Asian_Football_Confederation,TRUE
+Norway,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Argentina,CONMEBOL,https://en.wikipedia.org/wiki/CONMEBOL,TRUE
+Algeria,CAF,https://en.wikipedia.org/wiki/Confederation_of_African_Football,TRUE
+Austria,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Jordan,AFC,https://en.wikipedia.org/wiki/Asian_Football_Confederation,TRUE
+Portugal,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+DR Congo,CAF,https://en.wikipedia.org/wiki/Confederation_of_African_Football,TRUE
+Uzbekistan,AFC,https://en.wikipedia.org/wiki/Asian_Football_Confederation,TRUE
+Colombia,CONMEBOL,https://en.wikipedia.org/wiki/CONMEBOL,TRUE
+England,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Croatia,UEFA,https://en.wikipedia.org/wiki/UEFA,TRUE
+Ghana,CAF,https://en.wikipedia.org/wiki/Confederation_of_African_Football,TRUE
+Panama,CONCACAF,https://en.wikipedia.org/wiki/CONCACAF,TRUE
