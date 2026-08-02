@@ -1,5 +1,87 @@
 # Decision Log — 2026 World Cup Format Evaluation
 
+## 2026-08-01 — Build 8: incremental load via Streams + Tasks, compared by natural key not match_id
+
+**Decision**: `RAW.MATCH_STREAM` (Stream on `RAW.MATCH`) feeds
+`CORE.SP_APPLY_MATCH_STREAM()` (stored procedure, `sql/core/10_create_apply_match_stream_procedure.sql`),
+which applies corrections (`METADATA$ISUPDATE = TRUE`) via `UPDATE` and
+new matches (`METADATA$ISUPDATE = FALSE`) via `INSERT`, both keyed on
+`CORE.FACT_MATCH`'s existing natural key (`tournament_id`, `date_id`,
+`home_team_id`, `away_team_id`) - no truncate, unlike every other
+`CORE` populate query in this project. `CORE.INCREMENTAL_FACT_MATCH_TASK`
+wraps the procedure call, matching `docs/architecture.md`'s Streams+Tasks
+commitment for this build.
+
+**A real, load-bearing constraint found while designing this, not
+glossed over**: `CORE.FACT_MATCH.match_id` is assigned by
+`ROW_NUMBER() OVER (ORDER BY match_date, home_team, away_team)` at full-
+rebuild time (`sql/core/populate/07_fact_match.sql`), then the historical
+block is appended starting at `MAX(match_id) + 1`
+(`sql/core/populate/10_fact_match_historical.sql`). Inserting one new 2026
+match and then running a full rebuild shifts every historical row's
+`match_id` up by 1, because the 2026 block now has 105 rows instead of
+104, moving the historical block's starting offset. The incremental path
+correctly leaves historical `match_id`s untouched (only `RAW.MATCH`
+changed, not `RAW.HISTORICAL_MATCH`) and assigns the new row
+`MAX(match_id) + 1` directly - which does **not** match what a full
+rebuild produces for the historical block, even though every row's actual
+match data is identical. **Consequence**: Build 8's "incremental result
+equals full-refresh result, byte- or hash-identical" success criterion
+(`docs/build_plan.md`) is verified by hashing `CORE.FACT_MATCH` joined
+back to natural-key/business columns (team names, tournament year, match
+date, scores, stage name, venue name - see
+`src/incremental/demo_incremental_load.py`'s `FACT_MATCH_NATURAL_VIEW_QUERY`),
+not by hashing raw `match_id`/`date_id`/etc. surrogate keys, which are
+rebuild-order-dependent by design in this schema.
+
+**A second, narrower constraint, also documented rather than assumed**:
+the incremental `INSERT` branch's `MAX(match_id) + ROW_NUMBER()`
+assignment only agrees with what a from-scratch rebuild's global
+`ROW_NUMBER()` would produce when the new match's
+`(match_date, home_team, away_team)` sort key is not earlier than every
+existing 2026 row's - true for a genuinely new match arriving after the
+tournament's last already-loaded date (exactly what "new-match arrival"
+describes), not true in general for an arbitrary backdated insert. Out of
+scope for this build; not silently assumed to hold universally.
+
+**Demonstrated and verified against the live account, not assumed**:
+`src/incremental/demo_incremental_load.py` runs 3 scenarios - new-match
+arrival, a score correction, and an idempotent no-op rerun - each
+comparing the incremental result against a full rebuild
+(`src.core.build_core.main()`) by content hash, raising on any mismatch
+(a real committed automated test per the build plan's success criterion,
+not a one-time manual check). All 3 passed. The script also drives
+`CORE.INCREMENTAL_FACT_MATCH_TASK` once via `EXECUTE TASK`, polling
+`TASK_HISTORY` for `SUCCEEDED`, as a secondary confirmation that the Task
+object itself works - the main correctness proof calls the procedure
+directly instead, for deterministic synchronous timing. Cleans up back to
+the original 220-row baseline afterward (same fixture-and-cleanup
+discipline as Build 3's deliberately-injected bad-row test) and was
+re-run twice end to end to confirm the whole demo, not just the
+procedure, is safely re-runnable.
+
+**Cost decision**: `CORE.INCREMENTAL_FACT_MATCH_TASK` is created with a
+schedule (`60 MINUTE`, documenting what a production deployment would
+use) but is never `RESUME`d - Snowflake creates tasks `SUSPENDED` by
+default. A continuously scheduled task would poll the warehouse every
+interval regardless of whether `RAW.MATCH_STREAM` has pending data, real
+if small compute cost this project's trial-credit constraint doesn't need
+to spend. The demo drives it with an explicit `EXECUTE TASK` on demand
+instead.
+
+**Real bug found and fixed while building this**:
+`src/ingestion/setup_snowflake.py`'s `run_sql_file()` split each `.sql`
+file's statements on a naive `.split(";")`, which breaks
+`10_create_apply_match_stream_procedure.sql` - its `$$`-quoted procedure
+body itself contains semicolons (`BEGIN TRANSACTION; ... COMMIT;`).
+Fixed by switching to the Snowflake connector's own
+`conn.execute_string()`, which parses statement boundaries the same way
+Snowflake does (respecting dollar-quoting) instead of blindly splitting
+on every `;`. Caught immediately by re-running `setup_snowflake.py`
+end-to-end after adding the new file, before this was committed anywhere.
+
+---
+
 ## 2026-08-01 — Build 6 Part 2: 5 ANALYTICS marts + statistical validation layer
 
 **Decision**: All 5 marts from `docs/metric_definitions.md` are built as

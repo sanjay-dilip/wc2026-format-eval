@@ -38,7 +38,8 @@ claim.
 | 7 | Venue coordinates + travel/rest mart (`ANALYTICS.TEAM_TRAVEL_REST`) | Done, second-source coordinate cross-check complete (issue #13) |
 | 6 (part 1 of 2) | FIFA ranking sourcing + `CORE.TEAM_TOURNAMENT_RANKING`, mart metric definitions | Done (issue #19) |
 | 6 (part 2 of 2) | 5 analytical marts + statistical validation layer (`docs/statistical_validation_results.md`) | Done (issue #23) |
-| 8, 9, 10, C | Incremental-load demo, cross-account sharing, Power BI layer, consolidation | Not started |
+| 8 | Incremental pipeline demo (`RAW.MATCH_STREAM`, `CORE.SP_APPLY_MATCH_STREAM()`, `CORE.INCREMENTAL_FACT_MATCH_TASK`) | Done (issue #25) |
+| 9, 10, C | Cross-account sharing, Power BI layer, consolidation | Not started |
 
 Full build-by-build detail: `docs/build_plan.md`. Sourcing decisions and
 their rationale: `docs/decision_log.md`.
@@ -66,6 +67,15 @@ plus 116 historical comparison rows (2022, 1994), 220 total, spanning the
 team's FIFA World Ranking per tournament (grain: team × tournament, since
 a returning team's ranking differs by tournament — not a `dim_team`
 column). Full schema diagram and column-level detail: `docs/architecture.md`.
+
+`RAW.MATCH_STREAM` (a Stream on `RAW.MATCH`) plus
+`CORE.SP_APPLY_MATCH_STREAM()` (a stored procedure) and
+`CORE.INCREMENTAL_FACT_MATCH_TASK` (a Task wrapping it) apply new-match
+arrivals and score corrections into `CORE.FACT_MATCH` incrementally — no
+truncate — instead of every other `CORE` table's truncate-and-repopulate
+pattern. `src/incremental/demo_incremental_load.py` proves the two paths
+agree by content hash. Full detail: `docs/decision_log.md`, 2026-08-01
+"Build 8" entry.
 
 ## Setup
 
@@ -106,6 +116,7 @@ python -m src.ingestion.load_raw          # load all RAW source files
 python -m src.core.build_core             # populate CORE dimensions + fact_match
 python -m src.geospatial.build_travel_rest  # populate the travel/rest mart
 python -m src.analytics.run_statistical_validation  # run hypothesis tests, populate ANALYTICS.STATISTICAL_VALIDATION
+python -m src.incremental.demo_incremental_load  # prove incremental load matches full rebuild
 python -m src.validation.run_checks       # run data-quality checks
 python -m src.validation.reconcile_counts # source-to-warehouse row count reconciliation
 ```
@@ -137,6 +148,7 @@ src/
   core/                     CORE dimensional model population
   geospatial/                Travel/rest mart population
   analytics/                 Statistical validation layer (5 marts are plain SQL views)
+  incremental/                Incremental-load demo (Stream + stored procedure + Task)
   transform/                 Local, Snowflake-independent match/stage transform
 tests/                    pytest suite + fixtures (including a deliberately bad-row fixture)
 ```
