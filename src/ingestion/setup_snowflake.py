@@ -21,8 +21,10 @@ logger = logging.getLogger(__name__)
 SQL_ROOT = REPO_ROOT / "sql"
 
 # Schema-creation files must run before any file that creates objects
-# inside that schema (e.g. AUDIT before AUDIT.LOAD_LOG).
-SCHEMA_DIR_ORDER = ["raw", "validation", "core", "analytics", "audit"]
+# inside that schema (e.g. AUDIT before AUDIT.LOAD_LOG). "shared" runs
+# after "analytics" - its secure views (sql/shared/01_create_secure_views.sql)
+# wrap ANALYTICS objects, which must already exist.
+SCHEMA_DIR_ORDER = ["raw", "validation", "core", "analytics", "shared", "audit"]
 
 
 def iter_sql_files() -> list[Path]:

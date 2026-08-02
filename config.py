@@ -58,3 +58,16 @@ def load_snowflake_config() -> SnowflakeConfig:
         database=get_required_env("SNOWFLAKE_DATABASE"),
         schema=get_required_env("SNOWFLAKE_SCHEMA"),
     )
+
+
+def load_secondary_snowflake_config() -> SnowflakeConfig:
+    """Build a SnowflakeConfig for Build 9's secondary (consumer) trial account."""
+    return SnowflakeConfig(
+        account=get_required_env("SNOWFLAKE_SECONDARY_ACCOUNT"),
+        user=get_required_env("SNOWFLAKE_SECONDARY_USER"),
+        password=get_required_env("SNOWFLAKE_SECONDARY_PASSWORD"),
+        role=get_required_env("SNOWFLAKE_SECONDARY_ROLE"),
+        warehouse=get_required_env("SNOWFLAKE_SECONDARY_WAREHOUSE"),
+        database=get_required_env("SNOWFLAKE_SECONDARY_DATABASE"),
+        schema=get_required_env("SNOWFLAKE_SECONDARY_SCHEMA"),
+    )

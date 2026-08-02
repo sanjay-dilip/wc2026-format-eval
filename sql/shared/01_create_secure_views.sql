@@ -1,0 +1,25 @@
+-- One secure view per ANALYTICS object, each a thin SELECT * wrapper.
+-- SECURE (not a plain view) hides the view definition and query plan
+-- details from anyone but its owner - the actual security boundary
+-- docs/architecture.md flagged "Secure views" as demonstrating, gated to
+-- this build specifically because it needed a real second consumer
+-- account to have a boundary worth drawing against. The share
+-- (02_create_share_and_grants.sql) only ever grants USAGE on this schema
+-- - RAW/VALIDATION/CORE/ANALYTICS are never granted to it directly, so a
+-- consumer account gets exactly this curated surface and nothing else.
+CREATE OR REPLACE SECURE VIEW SHARED.COMPETITIVE_BALANCE AS
+    SELECT * FROM ANALYTICS.COMPETITIVE_BALANCE;
+CREATE OR REPLACE SECURE VIEW SHARED.GROUP_DIFFICULTY AS
+    SELECT * FROM ANALYTICS.GROUP_DIFFICULTY;
+CREATE OR REPLACE SECURE VIEW SHARED.UPSET_RATE AS
+    SELECT * FROM ANALYTICS.UPSET_RATE;
+CREATE OR REPLACE SECURE VIEW SHARED.CONFEDERATION_PERFORMANCE AS
+    SELECT * FROM ANALYTICS.CONFEDERATION_PERFORMANCE;
+CREATE OR REPLACE SECURE VIEW SHARED.EXPECTED_VS_ACTUAL AS
+    SELECT * FROM ANALYTICS.EXPECTED_VS_ACTUAL;
+CREATE OR REPLACE SECURE VIEW SHARED.TOURNAMENT_FORMAT_COMPARISON AS
+    SELECT * FROM ANALYTICS.TOURNAMENT_FORMAT_COMPARISON;
+CREATE OR REPLACE SECURE VIEW SHARED.TEAM_TRAVEL_REST AS
+    SELECT * FROM ANALYTICS.TEAM_TRAVEL_REST;
+CREATE OR REPLACE SECURE VIEW SHARED.STATISTICAL_VALIDATION AS
+    SELECT * FROM ANALYTICS.STATISTICAL_VALIDATION;

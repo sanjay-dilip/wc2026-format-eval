@@ -10,12 +10,11 @@ if str(REPO_ROOT) not in sys.path:
 import snowflake.connector
 from snowflake.connector import SnowflakeConnection
 
-from config import load_snowflake_config
+from config import SnowflakeConfig, load_secondary_snowflake_config, load_snowflake_config
 
 
-def get_connection() -> SnowflakeConnection:
-    """Open a Snowflake connection using credentials from .env."""
-    cfg = load_snowflake_config()
+def _connect(cfg: SnowflakeConfig) -> SnowflakeConnection:
+    """Open a Snowflake connection from a SnowflakeConfig."""
     return snowflake.connector.connect(
         account=cfg.account,
         user=cfg.user,
@@ -25,3 +24,13 @@ def get_connection() -> SnowflakeConnection:
         database=cfg.database,
         schema=cfg.schema,
     )
+
+
+def get_connection() -> SnowflakeConnection:
+    """Open a Snowflake connection to the primary (producer) account using .env."""
+    return _connect(load_snowflake_config())
+
+
+def get_secondary_connection() -> SnowflakeConnection:
+    """Open a Snowflake connection to Build 9's secondary (consumer) trial account."""
+    return _connect(load_secondary_snowflake_config())
