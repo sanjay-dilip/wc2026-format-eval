@@ -1,5 +1,91 @@
 # Decision Log — 2026 World Cup Format Evaluation
 
+## 2026-08-02 — Issue #39: FIFA ranking snapshots cross-checked, 9 gaps backfilled
+
+**Decision**: `data/raw/wc_fifa_ranking_snapshots.csv` now carries a second,
+independently-sourced FIFA World Ranking value per team per tournament
+snapshot (`second_source_url`, `cross_check_status`) alongside the
+original Wikipedia-sourced value (Build 6 Part 1, 2026-07-31 entry).
+`RAW.FIFA_RANKING_SNAPSHOT` was extended to match (`ALTER TABLE ... ADD
+COLUMN IF NOT EXISTS`, same pattern issues #13/#33/#34 used) and reloaded.
+Discovered stale during this session's blocker cleanup — CONTEXT.md's
+open blockers list still said "FIFA rankings sourcing — untouched," but
+Build 6 Part 1 had actually sourced it; it was simply never
+cross-checked, same caveat status the group draw and confederation
+crosswalk were in before issues #33/#34.
+
+**Second source used**: `en.fifaranking.net`, a general FIFA World Ranking
+archive queried by exact historical date
+(`ranking/index.php?d=YYYY-MM-DD`) — independently useful here because it
+publishes the routine monthly/periodic FIFA ranking release for every
+national team on a given date, not a World-Cup-seeding-specific table like
+the original source. Three snapshot dates fetched directly, matching the
+project's existing 3 tournament snapshot dates exactly: 2025-11-19 (2026),
+2022-03-31 (2022), 1993-11-19 (1994).
+
+**Cross-check result — values**: All 95 non-NULL ranking values across
+all 3 snapshots agree with the second source exactly, including a tied
+rank (Argentina and Switzerland both at 9th in the 1993-11-19 snapshot,
+confirmed on both sources). Zero disagreements.
+
+**Real finding, not just confirmation**: The second source has real
+FIFA ranking values for **all 9 teams this project's data had as `NULL`**
+(6 in the 2026 snapshot: Bosnia and Herzegovina, Czech Republic, DR Congo,
+Iraq, Sweden, Turkey; 3 in the 2022 snapshot: Australia, Costa Rica,
+Wales). The original NULLs were never "no ranking existed" — Build 6 Part
+1's own decision-log entry already explained these as teams not yet
+determined in the *World-Cup-seeding* table at the snapshot date (late
+playoff qualifiers), which is a real fact, but it doesn't mean FIFA hadn't
+published a general ranking for that team on that date. The second source,
+being a general periodic ranking release rather than a seeding table,
+had them.
+
+**Decision, confirmed with user before acting**: backfill all 9 gaps from
+the second source rather than leave them NULL. `fifa_ranking` is now
+populated for all 104 rows (0 NULLs remaining), `cross_check_status =
+'BACKFILLED'` on those 9 rows (vs `'MATCH'` on the other 95) so the
+provenance distinction stays visible, not silently merged into "sourced
+the same way as everything else."
+
+**Downstream re-run, not assumed clean**: `src/core/build_core.py` re-run
+against the live account — `CORE.TEAM_TOURNAMENT_RANKING` = 104 rows, 0
+NULL `fifa_ranking` (was 9). `ANALYTICS.UPSET_RATE` and
+`ANALYTICS.EXPECTED_VS_ACTUAL` are both `CREATE OR REPLACE VIEW`s with no
+separate populate script, so they picked up the new data automatically.
+`src/analytics/run_statistical_validation.py` re-run to regenerate
+`docs/statistical_validation_results.md` and `ANALYTICS.STATISTICAL_VALIDATION`
+against the now-complete data — **this changed real numbers, not just
+sample sizes**:
+
+| Metric | Before (docs/decision_log.md, Build 6 Part 2) | After (this entry) |
+|---|---|---|
+| Upset rate — decisive matches | 2026: n=63, historical: n=81 | 2026: n=80, historical: n=90 |
+| Upset rate — p-value / effect size | p=0.0521, Cohen's h=-0.360 | p=0.1359, Cohen's h=-0.255 |
+| Expected-vs-actual (2026) — n / rho / p | n=42, rho=-0.673, p=0.0000 | n=48, rho=-0.640, p=0.0000 |
+| Expected-vs-actual (2022) — n / rho / p | n=29, rho=-0.494, p=0.0064 | n=32, rho=-0.475, p=0.0060 |
+| Expected-vs-actual (1994) | unchanged (no NULLs existed for 1994) | unchanged |
+| Competitive balance, confederation performance | unchanged (don't use fifa_ranking) | unchanged |
+
+**What actually changed, stated plainly**: Upset rate was already
+not-statistically-significant at α=0.05 before this fix (p=0.0521, just
+over the line) — after the fix it is **more clearly** not significant
+(p=0.1359, further from the boundary), and the effect size shrank
+(Cohen's h -0.360 → -0.255). This doesn't reverse Build 6 Part 2's
+headline conclusion ("competitive balance and upset rate differences...
+not statistically significant") — it makes that conclusion better
+supported, on a larger and now-complete sample, not a smaller/biased one.
+Both expected-vs-actual correlations remain significant with similar
+effect sizes (large for 2026, medium for 2022) — direction and
+significance unchanged, magnitude shifted slightly with the larger sample.
+
+**Status update**: Open blocker #1 (FIFA rankings sourcing) is now fully
+resolved — independently sourced *and* independently cross-checked, with
+a real data-completeness gap found and fixed along the way, not just
+confirmed. All 5 original open blockers from the feasibility phase are
+now closed. No open sourcing or scoping gaps remain before Build 10.
+
+---
+
 ## 2026-08-02 — Issue #37: Tactical efficiency theme — final decision: NO-GO
 
 **Decision**: Cut the tactical efficiency theme entirely — both its
@@ -59,9 +145,9 @@ list updated: blocker #4 marked resolved (as a no-go, not a data gap).
 
 **Status update**: Blockers #2, #3, #4, and #5 are now closed. Blocker #1
 (FIFA rankings sourcing) was flagged this session as likely already
-resolved by Build 6 Part 1 but was not re-verified as part of this issue —
-see `CONTEXT.md`'s Open blockers list. No other open sourcing or scoping
-gaps remain before Build 10.
+resolved by Build 6 Part 1, and was independently cross-checked and closed
+afterward — see issue #39's entry above. No open sourcing or scoping gaps
+remain before Build 10.
 
 ---
 
