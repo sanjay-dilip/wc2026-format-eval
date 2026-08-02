@@ -18,9 +18,12 @@ sourced and cited inputs; validates the data with automated, re-runnable
 checks; models it into a dimensional schema; derives a travel/rest mart
 from it; extends the same fact table with a historical comparison baseline
 (2022, 1994); and sources each of those three tournaments' own FIFA World
-Ranking. The analytical marts that actually answer the core question above
-(competitive balance, upset rate, confederation performance) have written
-metric definitions but aren't built yet — see Status below.
+Ranking. The 5 analytical marts that answer the core question — competitive
+balance, group difficulty, upset rate, confederation performance, and
+expected-vs-actual performance — are built, each with a hypothesis test
+behind it (`docs/statistical_validation_results.md`) reporting an effect
+size and practical significance alongside its p-value, never a causal
+claim.
 
 ## Status
 
@@ -34,7 +37,8 @@ metric definitions but aren't built yet — see Status below.
 | 5 | Historical comparison layer (2022, 1994 alongside 2026; `ANALYTICS.TOURNAMENT_FORMAT_COMPARISON`) | Done |
 | 7 | Venue coordinates + travel/rest mart (`ANALYTICS.TEAM_TRAVEL_REST`) | Done, second-source coordinate cross-check complete (issue #13) |
 | 6 (part 1 of 2) | FIFA ranking sourcing + `CORE.TEAM_TOURNAMENT_RANKING`, mart metric definitions | Done (issue #19) |
-| 6 (part 2 of 2), 8, 9, 10, C | The 5 analytical marts + statistical validation, incremental-load demo, cross-account sharing, Power BI layer, consolidation | Not started |
+| 6 (part 2 of 2) | 5 analytical marts + statistical validation layer (`docs/statistical_validation_results.md`) | Done (issue #23) |
+| 8, 9, 10, C | Incremental-load demo, cross-account sharing, Power BI layer, consolidation | Not started |
 
 Full build-by-build detail: `docs/build_plan.md`. Sourcing decisions and
 their rationale: `docs/decision_log.md`.
@@ -49,8 +53,10 @@ VALIDATION   data-quality checks, rejected records, quality summary
 CORE         dimensional model: dim_date, dim_group, dim_stage, dim_venue,
              dim_confederation, dim_team, dim_tournament, fact_match,
              team_tournament_ranking
-ANALYTICS    marts built on CORE (TEAM_TRAVEL_REST, TOURNAMENT_FORMAT_COMPARISON
-             so far — the 5 marts that answer the core question are next)
+ANALYTICS    marts built on CORE: TEAM_TRAVEL_REST, TOURNAMENT_FORMAT_COMPARISON,
+             COMPETITIVE_BALANCE, GROUP_DIFFICULTY, UPSET_RATE,
+             CONFEDERATION_PERFORMANCE, EXPECTED_VS_ACTUAL, and
+             STATISTICAL_VALIDATION (one row per hypothesis test)
 AUDIT        load metadata: rows loaded, warehouse, duration
 ```
 
@@ -99,6 +105,7 @@ python -m src.ingestion.setup_snowflake   # create schemas, tables, warehouse co
 python -m src.ingestion.load_raw          # load all RAW source files
 python -m src.core.build_core             # populate CORE dimensions + fact_match
 python -m src.geospatial.build_travel_rest  # populate the travel/rest mart
+python -m src.analytics.run_statistical_validation  # run hypothesis tests, populate ANALYTICS.STATISTICAL_VALIDATION
 python -m src.validation.run_checks       # run data-quality checks
 python -m src.validation.reconcile_counts # source-to-warehouse row count reconciliation
 ```
@@ -129,6 +136,7 @@ src/
   validation/               Data-quality checks (Python + orchestration)
   core/                     CORE dimensional model population
   geospatial/                Travel/rest mart population
+  analytics/                 Statistical validation layer (5 marts are plain SQL views)
   transform/                 Local, Snowflake-independent match/stage transform
 tests/                    pytest suite + fixtures (including a deliberately bad-row fixture)
 ```

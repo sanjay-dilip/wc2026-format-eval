@@ -112,11 +112,16 @@ plainly as a deliberate simplification, not an oversight.
 
 **Historical comparability**: comparable across all 3 tournaments in
 principle (only needs `fact_match` scores + `CORE.TEAM_TOURNAMENT_RANKING`,
-both populated for all 3). 2026's 6 late-qualifier teams' matches get
-excluded per the null-handling rule above, which slightly shrinks 2026's
-effective sample relative to 2022/1994 (which both have 100% ranking
-coverage) - a caveat to state alongside the number, not a reason to skip
-the comparison.
+both populated for all 3). Ranking coverage is not 100% for any tournament
+except 1994: 2026 has 42/48 teams ranked (6 late qualifiers excluded),
+2022 has 29/32 (3 intercontinental/UEFA playoff winners not yet known at
+the snapshot date), 1994 has 24/24 (`docs/decision_log.md`, Build 6 Part 1
+entry). This correction supersedes an earlier version of this line that
+stated 2022/1994 both had 100% coverage - wrong for 2022, caught while
+building `ANALYTICS.UPSET_RATE` in Build 6 Part 2, which computes its
+`eligible_match_count` from the live data rather than this doc's prose.
+Each tournament's shrunk sample is a caveat to state alongside the number,
+not a reason to skip the comparison.
 
 ---
 
