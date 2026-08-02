@@ -675,6 +675,58 @@ issue #34.
 
 ---
 
+## 2026-08-02 — Issue #34: confederation crosswalk cross-checked against a second independent source
+
+**Decision**: `data/raw/wc2026_confederation_map.csv` (48 2026 teams) and
+`data/raw/wc_historical_confederation_map.csv` (14 incremental 1994/2022
+teams) now carry a second, independently-sourced confederation membership
+per team (`second_source_url`, `cross_check_match`) alongside the original
+compiled-from-general-knowledge value (2026-07-30 "Team->confederation
+crosswalk compiled, not scraped" entry). `RAW.TEAM_CONFEDERATION` and
+`RAW.HISTORICAL_TEAM_CONFEDERATION` were both extended to match (2 new
+columns via `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`, same pattern
+issues #13 and #33 used) and reloaded.
+
+**Second source used**: Wikipedia's own per-confederation membership
+articles (`CONCACAF`, `CONMEBOL`, `Oceania_Football_Confederation`,
+`Confederation_of_African_Football`, `Asian_Football_Confederation`,
+`UEFA`) — six pages total, each fetched directly and cross-referenced
+against every team tagged with that confederation in both crosswalk
+files, rather than per-team pages. Independently useful here because the
+original crosswalk cites no source at all (it was compiled, not scraped),
+so any cited source raises the evidentiary bar; three teams whose
+membership wasn't visible in an initial truncated page fetch (South Korea,
+Uzbekistan — both AFC; Republic of Ireland — UEFA) were separately
+confirmed via targeted search before being marked matched, not assumed
+from list length alone.
+
+**Cross-check result**: All 62 teams (48 in the 2026 crosswalk + 14
+incremental historical teams) match their confederation-membership listing
+on the corresponding Wikipedia confederation page exactly — zero
+disagreements. Confederation membership is a discrete, slow-changing fact
+(not a tolerance-banded measurement like venue coordinates), so this is a
+binary match/no-match check, not a distance calculation.
+
+**No CORE correction needed**: Since every original confederation
+assignment is confirmed accurate, `CORE.DIM_CONFEDERATION`/
+`CORE.DIM_TEAM.confederation_id` required no changes. Re-ran
+`src/core/build_core.py` anyway, per the issue's explicit validation
+requirement, against the live account: `DIM_CONFEDERATION` = 6 rows
+(unchanged), `DIM_TEAM` = 62 rows (unchanged) with 0 rows having a NULL
+`confederation_id`, `fact_match` = 220 rows (unchanged), 0 orphaned FKs on
+every checked column — identical to the pre-cross-check figures,
+confirming this cross-check didn't change the data, only its evidentiary
+strength.
+
+**Status update**: Open blocker #5 (confederation crosswalk) is now fully
+resolved — independently sourced *and* independently cross-checked, no
+longer resting on compiled-from-general-knowledge alone. All five original
+open blockers from the feasibility phase are now closed except blocker #4
+(tactical efficiency theme, still an undecided go/no-go, not a sourcing
+gap).
+
+---
+
 ## 2026-07-30 — Build 7: rest-day definition and time zone handling, decided before calculating
 
 **Decision**: `rest_days` in the travel/rest mart is `DATEDIFF('day',
