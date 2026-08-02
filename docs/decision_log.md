@@ -1,5 +1,67 @@
 # Decision Log — 2026 World Cup Format Evaluation
 
+## 2026-08-01 — Build 9: Secure Data Share implementation
+
+**Decision**: `SHARED` (new schema, dropped from the original list until
+this exact decision - see the go/no-go entry below) holds 8 `SECURE
+VIEW`s, each a thin `SELECT * FROM ANALYTICS.<object>` wrapper
+(`sql/shared/01_create_secure_views.sql`). `WC2026_SHARE`
+(`sql/shared/02_create_share_and_grants.sql`) is granted `USAGE` on the
+database and the `SHARED` schema, and `SELECT` on each of the 8 views
+individually - `RAW`/`VALIDATION`/`CORE`/`ANALYTICS` are never granted to
+the share directly, so the share's surface is exactly these 8 views.
+
+**Real constraint found while writing the grants, not assumed**:
+`GRANT SELECT ON ALL VIEWS IN SCHEMA WC2026.SHARED TO SHARE WC2026_SHARE`
+fails outright - `Bulk grant on objects of type VIEW to SHARE is
+restricted`, confirmed against the live account. Snowflake requires
+per-view grants to a share; `FUTURE VIEWS` isn't a workaround either
+(same restriction). Fixed by granting each of the 8 views by name.
+Consequence, documented rather than silently true: adding a 9th shared
+view later needs a 9th `GRANT` line in
+`sql/shared/02_create_share_and_grants.sql`, not just a new
+`CREATE VIEW`.
+
+**`ALTER SHARE ... SET ACCOUNTS` needs the consumer's org-qualified
+identifier** (`org_name.account_name`, e.g. `BFVUNPZ.KPB88773`) - not the
+legacy account locator used to connect (`WOB90221`), and not something
+stored in `.env` redundantly. `src/sharing/setup_share.py` looks this up
+live via `CURRENT_ORGANIZATION_NAME()`/`CURRENT_ACCOUNT_NAME()` on the
+secondary account each run, the same "derive at runtime instead of
+storing a second copy" reasoning `config.py` already uses for
+credentials. `SET ACCOUNTS` (not `ADD ACCOUNTS`) is used deliberately -
+idempotent by construction, since re-running it always results in
+exactly the one intended consumer rather than accumulating duplicates.
+
+**The pre-existing `WC2026_CONSUMER` database on the secondary account
+(created ahead of this build, alongside gathering its connection details)
+is left untouched, not dropped or repurposed.** `CREATE DATABASE ... FROM
+SHARE` creates its own new database object bound to the share
+(`WC2026_FROM_SHARE`); reusing `WC2026_CONSUMER`'s name would have
+required dropping it first, a destructive step this build doesn't
+actually need. Confirmed empty (only `INFORMATION_SCHEMA`/`PUBLIC`)
+before deciding this, not assumed safe to ignore.
+
+**Both success criteria verified against the live account, not
+assumed**, via `src/sharing/verify_consumer_access.py`:
+- BI-shaped query against `WC2026_FROM_SHARE.SHARED.COMPETITIVE_BALANCE`
+  succeeds and returns real rows (2026/2022/1994 competitive-balance
+  figures).
+- `SHOW SCHEMAS IN DATABASE WC2026_FROM_SHARE` lists exactly `SHARED` and
+  `INFORMATION_SCHEMA` - nothing else is visible from the consumer side
+  at all, not just access-denied on request.
+- A direct `SELECT * FROM WC2026_FROM_SHARE.RAW.MATCH` is actually
+  attempted (not assumed to fail) and fails with `Schema
+  'WC2026_FROM_SHARE.RAW' does not exist or not authorized` - `RAW` isn't
+  merely permission-denied, it's not even visible as a schema from the
+  consumer account.
+
+Both `setup_share.py` and `verify_consumer_access.py` were re-run a
+second time end-to-end to confirm idempotency; both produced identical
+results.
+
+---
+
 ## 2026-08-01 — Build 9 go/no-go: GO, bounded scope
 
 **Decision**: Build 9 (Cross-Account Sharing) goes ahead, scoped strictly
