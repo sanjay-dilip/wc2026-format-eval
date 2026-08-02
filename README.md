@@ -23,7 +23,11 @@ balance, group difficulty, upset rate, confederation performance, and
 expected-vs-actual performance — are built, each with a hypothesis test
 behind it (`docs/statistical_validation_results.md`) reporting an effect
 size and practical significance alongside its p-value, never a causal
-claim.
+claim. New matches and score corrections apply incrementally via
+Snowflake Streams and Tasks rather than a full rebuild, proven equivalent
+to one by content hash; a Secure Data Share exposes the 5 marts (plus 3
+supporting views) to a second, independent Snowflake account with `RAW`
+genuinely — not just assumedly — inaccessible from that side.
 
 ## Status
 
