@@ -39,14 +39,15 @@ claim.
 | 6 (part 1 of 2) | FIFA ranking sourcing + `CORE.TEAM_TOURNAMENT_RANKING`, mart metric definitions | Done (issue #19) |
 | 6 (part 2 of 2) | 5 analytical marts + statistical validation layer (`docs/statistical_validation_results.md`) | Done (issue #23) |
 | 8 | Incremental pipeline demo (`RAW.MATCH_STREAM`, `CORE.SP_APPLY_MATCH_STREAM()`, `CORE.INCREMENTAL_FACT_MATCH_TASK`) | Done (issue #25) |
-| 9, 10, C | Cross-account sharing, Power BI layer, consolidation | Not started |
+| 9 | Cross-account sharing (`WC2026_SHARE`, `SHARED` secure views) | Done (issue #29) |
+| 10, C | Power BI layer, consolidation | Not started |
 
 Full build-by-build detail: `docs/build_plan.md`. Sourcing decisions and
 their rationale: `docs/decision_log.md`.
 
 ## Architecture
 
-Five Snowflake schemas, in dependency order:
+Six Snowflake schemas, in dependency order:
 
 ```text
 RAW          landed source files, as ingested, no transformation
@@ -58,6 +59,8 @@ ANALYTICS    marts built on CORE: TEAM_TRAVEL_REST, TOURNAMENT_FORMAT_COMPARISON
              COMPETITIVE_BALANCE, GROUP_DIFFICULTY, UPSET_RATE,
              CONFEDERATION_PERFORMANCE, EXPECTED_VS_ACTUAL, and
              STATISTICAL_VALIDATION (one row per hypothesis test)
+SHARED       secure views wrapping ANALYTICS, granted to WC2026_SHARE -
+             the only schema a consumer account can ever see (Build 9)
 AUDIT        load metadata: rows loaded, warehouse, duration
 ```
 
@@ -76,6 +79,16 @@ truncate — instead of every other `CORE` table's truncate-and-repopulate
 pattern. `src/incremental/demo_incremental_load.py` proves the two paths
 agree by content hash. Full detail: `docs/decision_log.md`, 2026-08-01
 "Build 8" entry.
+
+`WC2026_SHARE` is a Secure Data Share from the primary account to a
+second, independent Snowflake trial account (Build 9) — granted
+`SELECT` only on `SHARED`'s 8 secure views, never on
+`RAW`/`VALIDATION`/`CORE`/`ANALYTICS` directly.
+`src/sharing/verify_consumer_access.py` runs a real BI-shaped query from
+the consumer account against the share and confirms — by actually trying,
+not assuming — that `RAW` is invisible from that account (`SHOW SCHEMAS`
+there lists only `SHARED`). Full detail: `docs/decision_log.md`,
+2026-08-01 "Build 9" entry.
 
 ## Setup
 
@@ -104,6 +117,20 @@ SNOWFLAKE_SCHEMA=
 imports from `config.py` rather than hardcoding credentials or file
 paths.
 
+Build 9 (cross-account sharing) needs a second, independent Snowflake
+account — add these 7 more `SNOWFLAKE_SECONDARY_*` vars to the same
+`.env` (same shape as above, one set per account):
+
+```text
+SNOWFLAKE_SECONDARY_ACCOUNT=
+SNOWFLAKE_SECONDARY_USER=
+SNOWFLAKE_SECONDARY_PASSWORD=
+SNOWFLAKE_SECONDARY_ROLE=
+SNOWFLAKE_SECONDARY_WAREHOUSE=
+SNOWFLAKE_SECONDARY_DATABASE=
+SNOWFLAKE_SECONDARY_SCHEMA=
+```
+
 ## Usage
 
 Run from the repo root, in order (each step is idempotent — safe to
@@ -117,6 +144,8 @@ python -m src.core.build_core             # populate CORE dimensions + fact_matc
 python -m src.geospatial.build_travel_rest  # populate the travel/rest mart
 python -m src.analytics.run_statistical_validation  # run hypothesis tests, populate ANALYTICS.STATISTICAL_VALIDATION
 python -m src.incremental.demo_incremental_load  # prove incremental load matches full rebuild
+python -m src.sharing.setup_share         # share WC2026_SHARE with the secondary account (needs SNOWFLAKE_SECONDARY_* vars)
+python -m src.sharing.verify_consumer_access  # accept the share, run a BI-shaped query, confirm RAW is inaccessible
 python -m src.validation.run_checks       # run data-quality checks
 python -m src.validation.reconcile_counts # source-to-warehouse row count reconciliation
 ```
@@ -141,14 +170,16 @@ sql/
   validation/             VALIDATION schema DDL + per-check detection queries
   core/                   CORE schema DDL + populate/ queries (dims, fact_match)
   analytics/               ANALYTICS schema DDL + populate/ queries (marts)
+  shared/                  SHARED schema DDL: secure views + the share's grants
   audit/                    AUDIT schema DDL
 src/
-  ingestion/               Snowflake connection, schema setup, RAW loading
+  ingestion/               Snowflake connection (primary + secondary), schema setup, RAW loading
   validation/               Data-quality checks (Python + orchestration)
   core/                     CORE dimensional model population
   geospatial/                Travel/rest mart population
   analytics/                 Statistical validation layer (5 marts are plain SQL views)
   incremental/                Incremental-load demo (Stream + stored procedure + Task)
+  sharing/                    Cross-account share setup + consumer-side verification
   transform/                 Local, Snowflake-independent match/stage transform
 tests/                    pytest suite + fixtures (including a deliberately bad-row fixture)
 ```
