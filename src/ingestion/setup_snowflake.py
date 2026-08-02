@@ -33,23 +33,26 @@ def iter_sql_files() -> list[Path]:
     return files
 
 
-def run_sql_file(cursor, path: Path) -> None:
-    """Execute every statement in a single .sql file."""
-    statements = path.read_text(encoding="utf-8")
-    for statement in statements.split(";"):
-        statement = statement.strip()
-        if statement:
-            cursor.execute(statement)
+def run_sql_file(conn, path: Path) -> None:
+    """Execute every statement in a single .sql file.
+
+    Uses execute_string(), not a naive split on ";" - Build 8's stored
+    procedure file (sql/core/10_create_apply_match_stream_procedure.sql)
+    is one CREATE PROCEDURE statement whose $$-quoted body itself contains
+    semicolons; execute_string() parses statement boundaries the same way
+    Snowflake does, respecting dollar-quoting, instead of breaking on
+    every ";" regardless of context.
+    """
+    conn.execute_string(path.read_text(encoding="utf-8"))
 
 
 def main() -> None:
     """Run every DDL file under sql/ against the configured account."""
     conn = get_connection()
     try:
-        cursor = conn.cursor()
         for path in iter_sql_files():
             logger.info("Running %s", path.relative_to(REPO_ROOT))
-            run_sql_file(cursor, path)
+            run_sql_file(conn, path)
     finally:
         conn.close()
 
