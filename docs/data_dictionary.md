@@ -83,46 +83,17 @@ value count, and explicit duplicate-key check on the candidate join key.
 
 ---
 
-## `data/raw/wc2026_matches_raw_subset.csv` — flagged, not raw
+## `data/raw/wc2026_matches_raw_subset.csv` — removed (Build C)
 
-**This file should not be treated as raw input as currently structured or
-located. Two separate issues, not silently fixed here:**
-
-1. **It is not raw — it is a filtered derivative of
-   `international_results_full.csv`, sitting in `data/raw/`.** Verified
-   directly: every one of its 104 rows matches, value-for-value on all
-   shared columns, a row in `international_results_full.csv` where
-   `tournament == "FIFA World Cup"` and `date >= 2026-01-01` (e.g. its first
-   row, `2026-06-11,Mexico,South Africa,2,0,...`, is byte-identical to line
-   49,418 of the parent file). Filtering 49,520 rows down to 104 is a
-   transformation, not a pull.
-2. **The file has no header row.** Its first line is already data
-   (`2026-06-11,Mexico,South Africa,2,0,...`). Column names below are
-   inferred by matching column order and values against
-   `international_results_full.csv`, not read from the file itself — loading
-   this file with a default `pandas.read_csv()` today will silently treat
-   that first match as a header and lose it.
-
-**Recommendation**: Don't just rename or move this file without deciding
-which problem it's solving. Two options, either is better than the status
-quo:
-- If a static WC2026-only file is wanted for convenience, move it to a
-  `data/interim/` (or `data/processed/`) location, add the missing header
-  row, and document it as derived.
-- Better: regenerate it on demand via a small committed script (e.g.
-  `scripts/filter_wc2026.py`) that filters `international_results_full.csv`
-  at run time, so there's no static duplicate that can silently drift out of
-  sync if the raw file is ever refreshed.
-
-- **Grain** (as currently structured): one row per 2026 FIFA World Cup match.
-- **Row count**: 104 data rows (matches the confirmed official count).
-- **File size on disk**: 7,883 bytes.
-- **Columns** (inferred — see header issue above): `date`, `home_team`,
-  `away_team`, `home_score`, `away_score`, `tournament`, `city`, `country`,
-  `neutral` — same types as `international_results_full.csv` above. No nulls
-  in any column (checked).
-- **Candidate join key**: `date + home_team + away_team`. Checked and
-  confirmed unique: 104/104.
+This file was a filtered, header-less derivative of
+`international_results_full.csv` (104 rows matching
+`tournament == "FIFA World Cup"` and `date >= 2026-01-01`), flagged in this
+doc since early in the project as misplaced — a transformation sitting in
+`data/raw/`, not an actual raw input, and never read by any script.
+`data/processed/wc2026_stage_mapping.csv` (below) is the real, validated,
+reproducible replacement — regenerated from
+`international_results_full.csv` by `src/transform/build_stage_mapping.py`,
+not a static ad hoc filter. Removed as part of Build C's surface trim.
 
 ---
 
@@ -236,8 +207,6 @@ quo:
 
 ## Not yet verified / out of scope for this pass
 
-- No `data/interim/` directory currently exists — the recommendation above
-  to relocate `wc2026_matches_raw_subset.csv` would create one.
 - Encoding was not independently audited beyond successful UTF-8 parsing of
   all four files with no decode errors; no BOM or non-UTF-8 byte sequences
   were checked for explicitly.
