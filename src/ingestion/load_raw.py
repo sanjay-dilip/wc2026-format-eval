@@ -82,6 +82,25 @@ def load_file(cursor, source_path: Path, target_table: str, warehouse_name: str)
     logger.info("Loaded %s rows into %s from %s", rows_loaded, target_table, source_path.name)
 
 
+def drain_match_stream(cursor) -> None:
+    """Consume RAW.MATCH_STREAM's backlog from the truncate-and-reload above
+    without applying it to CORE.FACT_MATCH.
+
+    RAW.MATCH_STREAM exists to track ongoing changes for
+    CORE.SP_APPLY_MATCH_STREAM() (the Build 8 incremental-load path), not
+    the bulk reload load_file() just did - but any TRUNCATE + COPY INTO on
+    a streamed table still registers as stream data (a full delete/insert
+    pair per row). Left undrained, that backlog makes the incremental-load
+    demo's clean-state check fail on every fresh load, not just a genuinely
+    dirty state - see docs/decision_log.md's "Incremental pipeline
+    demonstration" entry. Querying the stream inside an explicit
+    transaction advances its offset without touching CORE.FACT_MATCH.
+    """
+    cursor.execute("BEGIN")
+    cursor.execute("CREATE OR REPLACE TEMPORARY TABLE RAW._MATCH_STREAM_DRAIN AS SELECT * FROM RAW.MATCH_STREAM")
+    cursor.execute("COMMIT")
+
+
 def main() -> None:
     """Load both RAW source files and log each run to AUDIT.LOAD_LOG."""
     cfg = load_snowflake_config()
@@ -89,6 +108,7 @@ def main() -> None:
     try:
         cursor = conn.cursor()
         load_file(cursor, MATCH_SOURCE_PATH, "RAW.MATCH", cfg.warehouse)
+        drain_match_stream(cursor)
         load_file(cursor, SHOOTOUT_SOURCE_PATH, "RAW.SHOOTOUT", cfg.warehouse)
         load_file(cursor, GROUP_DRAW_SOURCE_PATH, "RAW.GROUP_DRAW", cfg.warehouse)
         load_file(cursor, CONFEDERATION_SOURCE_PATH, "RAW.TEAM_CONFEDERATION", cfg.warehouse)
