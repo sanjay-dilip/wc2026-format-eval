@@ -1,102 +1,212 @@
 # WC2026 Format Evaluation
 
-> **Work in progress.** This README describes the project as it stands
-> today, not a finished deliverable. The final, polished README (with a
-> reproducible headline claim a stranger can verify from a clean clone) is
-> explicitly scoped as the project's last build — see `docs/build_plan.md`,
-> Build C. Until then, treat this as an honest snapshot, not a pitch.
+A Snowflake data pipeline and Power BI dashboard evaluating whether FIFA's
+expansion of the World Cup to 48 teams increased global representation
+without materially degrading competitive balance or scheduling fairness,
+relative to prior tournament formats.
 
-Evaluates whether FIFA's expansion of the World Cup to 48 teams increased
-global representation without materially degrading competitive balance or
-scheduling fairness, relative to prior tournament formats.
+---
 
-## What it does
+## Overview
 
-Builds a Snowflake data pipeline for the 2026 FIFA World Cup: ingests
-match results, stage/group structure, and venue data from independently
-sourced and cited inputs; validates the data with automated, re-runnable
-checks; models it into a dimensional schema; derives a travel/rest mart
-from it; extends the same fact table with a historical comparison baseline
-(2022, 1994); and sources each of those three tournaments' own FIFA World
-Ranking. The 5 analytical marts that answer the core question — competitive
-balance, group difficulty, upset rate, confederation performance, and
-expected-vs-actual performance — are built, each with a hypothesis test
-behind it (`docs/statistical_validation_results.md`) reporting an effect
-size and practical significance alongside its p-value, never a causal
-claim. New matches and score corrections apply incrementally via
-Snowflake Streams and Tasks rather than a full rebuild, proven equivalent
-to one by content hash; a Secure Data Share exposes the 5 marts (plus 3
-supporting views) to a second, independent Snowflake account with `RAW`
-genuinely — not just assumedly — inaccessible from that side.
+FIFA expanded the men's World Cup from 32 to 48 teams starting in 2026.
+This project builds an end-to-end analytics pipeline — raw ingestion,
+automated data-quality validation, a dimensional model, and five
+statistically validated analytical marts — to test that expansion against
+104 matches from the 2026 tournament and 116 matches from two prior
+formats (2022's 32-team, 1994's 24-team), all under the same metric
+definitions.
 
-## Status
+**Who this is for**: a FIFA tournament strategy analyst or format-planning
+stakeholder deciding whether the 48-team structure should be retained,
+adjusted, or reconsidered — and, as a portfolio piece, anyone evaluating
+whether I can take a real analytical question through sourcing, modeling,
+statistical testing, and presentation without skipping steps.
 
-| Build | What it covers | State |
-| --- | --- | --- |
-| 0 | Feasibility research, source validation | Done |
-| 1 | Problem statement, schema design | Done |
-| 2 | Raw ingestion into Snowflake (`RAW` schema) | Done |
-| 3 | Data-quality validation layer (`VALIDATION` schema) | Done |
-| 4 | Dimensional model (`CORE` schema) | Done |
-| 5 | Historical comparison layer (2022, 1994 alongside 2026; `ANALYTICS.TOURNAMENT_FORMAT_COMPARISON`) | Done |
-| 7 | Venue coordinates + travel/rest mart (`ANALYTICS.TEAM_TRAVEL_REST`) | Done, second-source coordinate cross-check complete (issue #13) |
-| 6 (part 1 of 2) | FIFA ranking sourcing + `CORE.TEAM_TOURNAMENT_RANKING`, mart metric definitions | Done (issue #19) |
-| 6 (part 2 of 2) | 5 analytical marts + statistical validation layer (`docs/statistical_validation_results.md`) | Done (issue #23) |
-| 8 | Incremental pipeline demo (`RAW.MATCH_STREAM`, `CORE.SP_APPLY_MATCH_STREAM()`, `CORE.INCREMENTAL_FACT_MATCH_TASK`) | Done (issue #25) |
-| 9 | Cross-account sharing (`WC2026_SHARE`, `SHARED` secure views) | Done (issue #29) |
-| 10, C | Power BI layer, consolidation | Not started |
+**Final output**: five Snowflake `ANALYTICS` marts (competitive balance,
+group difficulty, upset rate, confederation performance,
+expected-vs-actual), each backed by a hypothesis test with an effect size
+(never a bare p-value or a causal claim), an 8-page Power BI report built
+on eight governed secure views, and a full sourcing/decision trail for
+every input used.
 
-Full build-by-build detail: `docs/build_plan.md`. Sourcing decisions and
-their rationale: `docs/decision_log.md`.
+---
 
-## Architecture
+## Why I Built This
 
-Six Snowflake schemas, in dependency order:
+I built this as a portfolio piece to demonstrate an end-to-end Snowflake
+analytics pipeline — ingestion through validation, dimensional modeling,
+analytics, and BI presentation — on a real, falsifiable question rather
+than a toy dataset. It also served as a hands-on way to learn Snowflake
+itself: schema design, Streams/Tasks for incremental loads, Secure Data
+Shares for cross-account governance, and native geospatial functions,
+all applied to a question I could sanity-check against something I
+already understood (football).
 
-```text
-RAW          landed source files, as ingested, no transformation
-VALIDATION   data-quality checks, rejected records, quality summary
-CORE         dimensional model: dim_date, dim_group, dim_stage, dim_venue,
-             dim_confederation, dim_team, dim_tournament, fact_match,
-             team_tournament_ranking
-ANALYTICS    marts built on CORE: TEAM_TRAVEL_REST, TOURNAMENT_FORMAT_COMPARISON,
-             COMPETITIVE_BALANCE, GROUP_DIFFICULTY, UPSET_RATE,
-             CONFEDERATION_PERFORMANCE, EXPECTED_VS_ACTUAL, and
-             STATISTICAL_VALIDATION (one row per hypothesis test)
-SHARED       secure views wrapping ANALYTICS, granted to WC2026_SHARE -
-             the only schema a consumer account can ever see (Build 9)
-AUDIT        load metadata: rows loaded, warehouse, duration
-```
+---
 
-`fact_match` is grain one-row-per-match: 104 rows for the 2026 tournament
-plus 116 historical comparison rows (2022, 1994), 220 total, spanning the
-3 tournaments in `dim_tournament`. `team_tournament_ranking` holds each
-team's FIFA World Ranking per tournament (grain: team × tournament, since
-a returning team's ranking differs by tournament — not a `dim_team`
-column). Full schema diagram and column-level detail: `docs/architecture.md`.
+## Key Features
 
-`RAW.MATCH_STREAM` (a Stream on `RAW.MATCH`) plus
-`CORE.SP_APPLY_MATCH_STREAM()` (a stored procedure) and
-`CORE.INCREMENTAL_FACT_MATCH_TASK` (a Task wrapping it) apply new-match
-arrivals and score corrections into `CORE.FACT_MATCH` incrementally — no
-truncate — instead of every other `CORE` table's truncate-and-repopulate
-pattern. `src/incremental/demo_incremental_load.py` proves the two paths
-agree by content hash. Full detail: `docs/decision_log.md`, 2026-08-01
-"Build 8" entry.
+- Built a fully idempotent, six-schema Snowflake pipeline (`RAW` →
+  `VALIDATION` → `CORE` → `ANALYTICS` → `SHARED`, plus `AUDIT`) — every
+  load and rebuild script is safe to re-run, verified by actually
+  re-running each one, not assumed.
+- Independently sourced and then cross-checked every non-match-result
+  input against a second, unrelated source — FIFA rankings, the group
+  draw, venue coordinates, and the confederation crosswalk — with zero
+  disagreements found across every data point checked.
+- Ran five hypothesis tests (Mann-Whitney U, Fisher's exact, Kruskal-Wallis,
+  Spearman rank correlation) comparing the 48-team 2026 format against
+  pooled 2022/1994 data, each reporting an effect size and a plain-language
+  practical-significance read, never just a p-value.
+- Built and proved an incremental-load pipeline (Snowflake Streams +
+  Tasks) that produces results identical to a full rebuild, verified by
+  content-hash comparison across three real scenarios (new match, score
+  correction, idempotent no-op rerun).
+- Demonstrated real producer/consumer data governance with a Secure Data
+  Share to a second Snowflake account, then verified — by actually trying
+  the query, not assuming — that the consumer account cannot see `RAW`.
+- Authored an 8-page Power BI report (`.pbip`, git-diffable) reading only
+  from eight governed secure views, with zero direct access to raw or
+  intermediate schemas.
 
-`WC2026_SHARE` is a Secure Data Share from the primary account to a
-second, independent Snowflake trial account (Build 9) — granted
-`SELECT` only on `SHARED`'s 8 secure views, never on
-`RAW`/`VALIDATION`/`CORE`/`ANALYTICS` directly.
-`src/sharing/verify_consumer_access.py` runs a real BI-shaped query from
-the consumer account against the share and confirms — by actually trying,
-not assuming — that `RAW` is invisible from that account (`SHOW SCHEMAS`
-there lists only `SHARED`). Full detail: `docs/decision_log.md`,
-2026-08-01 "Build 9" entry.
+---
 
-## Setup
+## Tech Stack
 
-**Prerequisites**: Python 3 (developed against 3.14), a Snowflake account.
+- Python 3.14
+- Snowflake (SQL, Streams, Tasks, Secure Data Shares, native geospatial
+  functions)
+- `snowflake-connector-python`, `python-dotenv`, `scipy`, `pytest`,
+  `requests`
+- Power BI Desktop (`.pbip` project format — semantic model + report,
+  authored via the `powerbi-modeling-mcp` TOM API plus Desktop for visual
+  authoring)
+- Git / GitHub (issue- and PR-driven workflow)
+
+---
+
+## Project Workflow
+
+1. Feasibility research and source validation — inventory every candidate
+   data source, tier its reliability, reject what can't be independently
+   verified
+2. Problem statement lock + schema design — decide the falsifiable
+   question and the dimensional shape before touching Snowflake
+3. Raw ingestion — land every source file into Snowflake's `RAW` schema
+   unmodified, with load auditing
+4. Data-quality validation — automated, re-runnable checks; nothing fails
+   silently, nothing gets dropped without a record
+5. Dimensional modeling — build `CORE`'s star schema, verify zero orphaned
+   foreign keys
+6. Historical comparison — extend the same fact table to 2022 and 1994 so
+   2026 has something to be measured against, under identical metric
+   definitions
+7. Geospatial / travel-rest analysis — venue-to-venue distance and rest
+   days per team, using Snowflake's native `ST_DISTANCE`
+8. Rankings resolution + analytical marts + statistical validation — close
+   the FIFA ranking gap, then build and statistically test all five marts
+9. Incremental pipeline demonstration — prove new data can be applied
+   without a full rebuild
+10. Cross-account sharing — govern access to the marts via Secure Data
+    Share, verified from the consumer side
+11. Power BI presentation layer — turn the marts into an 8-page report
+12. Consolidation — cost report, limitations doc, this README, tagged
+    `v1.0`
+
+Full build-by-build detail and every sourcing/design decision (including
+what was rejected and why): `docs/decision_log.md`.
+
+---
+
+## Data Sources
+
+- **Match results** (2026, plus 2022/1994 for historical comparison):
+  `martj42/international_results` (CC0-licensed).
+- **Stage/group draw**: Yahoo Sports editorial coverage, cross-checked
+  against Wikipedia's 12 per-group articles — 48/48 teams agree exactly.
+- **Team-to-confederation crosswalk**: compiled from known qualifying
+  outcomes (no source existed to scrape), cross-checked against
+  Wikipedia's six per-confederation membership pages — 62/62 teams agree
+  exactly.
+- **Venue coordinates**: sourced and cited per venue from Wikipedia,
+  replacing an unlicensed, partially-fabricated third-party dataset ruled
+  out during feasibility research; cross-checked against
+  OpenStreetMap/Nominatim — all 16 agree within 2.7-80.2 m.
+- **FIFA World Ranking**: one snapshot per tournament, sourced from each
+  tournament's own Wikipedia seeding article citing FIFA's official
+  release, cross-checked against `en.fifaranking.net` by exact historical
+  date — all 95 non-`NULL` values agreed exactly, and the second source
+  backfilled 9 values the original source had omitted.
+
+Every one of these is a real, licensed, cited input — no synthetic or
+fabricated data anywhere in the pipeline. Full sourcing rationale,
+including sources evaluated and rejected: `docs/decision_log.md`. Known
+limitations of every source (single-tournament snapshots, no live
+refresh mechanism): `docs/limitations.md`.
+
+---
+
+## Results / Outcomes
+
+All figures below are reproduced in `docs/statistical_validation_results.md`,
+generated by `src/analytics/run_statistical_validation.py` against the
+live Snowflake account — not hand-computed.
+
+- **220 matches modeled** across three tournaments (2026: 104, 2022: 64,
+  1994: 52), joined to a common dimensional model.
+- **Competitive balance**: not statistically significant (Mann-Whitney U,
+  p=0.397, rank-biserial r=-0.06). 2026's own mean absolute goal
+  difference is numerically higher than pooled 2022+1994 (1.56 vs. ~1.39)
+  — if the difference were real, it would point toward *less* balanced
+  matches under expansion, not more.
+- **Upset rate**: not statistically significant (Fisher's exact, p=0.136,
+  Cohen's h=-0.26). 2026's upset rate (16.2%) is numerically lower than
+  pooled 2022+1994 (26.7%).
+- **Confederation performance**: statistically significant, medium effect
+  (Kruskal-Wallis, p=0.0009, epsilon-squared=0.079) — confederation
+  membership is associated with real variation in per-match goal
+  differential in 2026.
+- **Ranking-vs-finish correlation**: statistically significant with a
+  large effect in all three tournaments (Spearman's rho -0.61 to -0.64) —
+  pre-tournament FIFA ranking is consistently associated with how far a
+  team advances.
+- **Sourcing integrity**: 100% agreement across every independently
+  cross-checked data point (95 ranking values, 48 group-draw teams, 16
+  venue coordinates, 62 confederation assignments) against a second,
+  unrelated source.
+- **Pipeline integrity**: incremental load proven identical to a full
+  rebuild by content hash across all 3 tested scenarios (new-match
+  arrival, a correction, an idempotent rerun); every idempotency-sensitive
+  script (`load_raw.py`, `build_core.py`, `build_travel_rest.py`) verified
+  safe to re-run by actually re-running it.
+- **Cost**: the entire pipeline, across all 10 builds, consumed 1.61
+  Snowflake credits total (`docs/cost_report.md`) — well under 1% of the
+  starting trial balance.
+
+None of the above is a causal claim — every statistical result uses
+"associated with" / "consistent with" language deliberately, per
+`docs/problem_statement.md`'s methodology rule.
+
+---
+
+## Screenshots / Demo
+
+No dashboard screenshots or demo video are committed to this repository
+yet — the 8-page Power BI report exists locally as a `.pbip` project
+(`powerbi/WC2026FormatEval.pbip`, tracked; the compiled `.pbix` binary is
+not). A demo script and recording are planned as a separate, standalone
+artifact outside this repo. Until screenshots are captured and committed,
+the report is reproducible by opening the `.pbip` project in Power BI
+Desktop against a live Snowflake account (see Setup below) — not yet
+verifiable from static images.
+
+---
+
+## How to Run
+
+**Prerequisites**: Python 3 (developed against 3.14), a Snowflake
+account.
 
 ```bash
 python -m venv venv
@@ -104,8 +214,7 @@ venv\Scripts\activate        # Windows
 pip install -r requirements.txt
 ```
 
-Create a `.env` file in the repo root (never committed — already in
-`.gitignore`) with:
+Create a `.env` file in the repo root (never committed) with:
 
 ```text
 SNOWFLAKE_ACCOUNT=
@@ -118,12 +227,10 @@ SNOWFLAKE_SCHEMA=
 ```
 
 `config.py` reads these via `python-dotenv`; every script in `src/`
-imports from `config.py` rather than hardcoding credentials or file
-paths.
+imports from `config.py` rather than hardcoding credentials or paths.
 
-Build 9 (cross-account sharing) needs a second, independent Snowflake
-account — add these 7 more `SNOWFLAKE_SECONDARY_*` vars to the same
-`.env` (same shape as above, one set per account):
+Cross-account sharing (Build 9) needs a second, independent Snowflake
+account — add these to the same `.env`:
 
 ```text
 SNOWFLAKE_SECONDARY_ACCOUNT=
@@ -134,8 +241,6 @@ SNOWFLAKE_SECONDARY_WAREHOUSE=
 SNOWFLAKE_SECONDARY_DATABASE=
 SNOWFLAKE_SECONDARY_SCHEMA=
 ```
-
-## Usage
 
 Run from the repo root, in order (each step is idempotent — safe to
 re-run):
@@ -160,15 +265,24 @@ Run the test suite:
 pytest tests/ -v
 ```
 
-## Project structure
+For the Power BI report: open `powerbi/WC2026FormatEval.pbip` in Power BI
+Desktop with the "Power BI Project (.pbip)" preview feature enabled, then
+set the real Snowflake account identifier via Power Query's Manage
+Parameters before refreshing (the committed project only has a
+placeholder — the account locator is never hardcoded).
+
+---
+
+## Repository Structure
 
 ```text
 config.py               Snowflake connection config + source file paths (env-driven)
 data/
   raw/                   Source files, as pulled or independently compiled/cited
   processed/             Derived, reproducible outputs (e.g. the validated stage mapping)
-docs/                    Problem statement, architecture, decision log, build plan,
-                         data dictionary, mart metric definitions
+docs/                    Problem statement, architecture, decision log, data dictionary,
+                         metric definitions, statistical validation results, cost report,
+                         limitations
 sql/
   raw/                    RAW schema + table DDL, numbered for run order
   validation/             VALIDATION schema DDL + per-check detection queries
@@ -186,34 +300,51 @@ src/
   sharing/                    Cross-account share setup + consumer-side verification
   transform/                 Local, Snowflake-independent match/stage transform
 tests/                    pytest suite + fixtures (including a deliberately bad-row fixture)
+powerbi/                 .pbip project: semantic model (TMDL) + 8-page report (PBIR)
 ```
 
-## Data sources
+---
 
-- **Match results**: `martj42/international_results` (CC0-licensed,
-  historically maintained). See `docs/data_feasibility_report.md`, Source 1.
-  Also the source for Build 5's historical comparison tournaments (2022,
-  1994) — see `docs/decision_log.md`.
-- **Stage/group draw**: Yahoo Sports editorial coverage, manually
-  transcribed into `data/raw/wc2026_group_draw.csv`. Single-sourced,
-  pending a second independent cross-check.
-- **Team-to-confederation crosswalk**: compiled from known 2026
-  qualifying outcomes, not scraped — no confederation data existed in any
-  source found during feasibility research. See `docs/decision_log.md`.
-- **Venue coordinates**: independently sourced and cited per venue from
-  Wikipedia (`data/raw/wc2026_venue_coordinates.csv`), replacing an
-  unlicensed, partially-fabricated third-party dataset ruled out during
-  feasibility research. Cross-checked against a second independent source
-  (OpenStreetMap/Nominatim, issue #13).
-- **FIFA World Ranking**: one snapshot per tournament (2026, 2022, 1994),
-  each from that tournament's own Wikipedia seeding/qualification article
-  citing FIFA's own official ranking release
-  (`data/raw/wc_fifa_ranking_snapshots.csv`). Several GitHub scraper repos
-  and a third-party Elo-rating alternative were evaluated and rejected
-  (no license, or not FIFA's own ranking system) — see
-  `docs/decision_log.md`. Single-sourced, pending a second independent
-  cross-check, same caveat status as the group draw and confederation
-  crosswalk.
+## What I Learned
 
-Every sourcing decision, including what was rejected and why, is logged
-in `docs/decision_log.md`.
+- Found and fixed a non-idempotent `COPY INTO ... FORCE=TRUE` pattern that
+  silently doubled row counts on re-run, by adding a truncate-first step —
+  caught by the project's own validation layer on its first live run, not
+  discovered after the fact.
+- Found and fixed a duplicate-venue bug (Arlington and Dallas were the
+  same physical stadium, temporarily rebranded for one match) before it
+  could propagate into the geospatial travel-distance mart.
+- Learned a real Snowflake quirk the hard way: `GENERATOR`/`SEQ4()`
+  cross-joins can silently truncate a generated date dimension if not
+  handled carefully.
+- Learned Snowflake rejects bulk (`ALL`/`FUTURE`) grants of views to a
+  Secure Data Share outright — each shared view has to be granted
+  individually, which has to be documented so a future added view isn't
+  silently unshared.
+- Practiced writing every sourcing and design decision down as it
+  happened, including sources evaluated and rejected, not just the ones
+  used — `docs/decision_log.md` is the result.
+
+---
+
+## Future Improvements
+
+- Capture and commit real dashboard screenshots (and a demo video) so the
+  Power BI report is verifiable without opening Power BI Desktop.
+- Schedule `CORE.INCREMENTAL_FACT_MATCH_TASK` on a live cadence instead of
+  leaving it created-but-suspended (currently a deliberate cost decision).
+- Add kickoff-time-of-day data if a source is ever found, to make
+  `rest_days` time-zone aware instead of date-only.
+- Automate the second-source cross-check step so a future tournament
+  cycle doesn't require re-sourcing every reference table by hand.
+- Backfill `went_to_et`/`neutral_site` if a source with a separate
+  regulation-time field is found.
+
+---
+
+## Contact
+
+**Sanjay Dilip**
+LinkedIn: [linkedin.com/in/sanjaydilip](https://linkedin.com/in/sanjaydilip)
+GitHub: [sanjay-dilip](https://github.com/sanjay-dilip)
+Email: sanjay.dilip3012@gmail.com
