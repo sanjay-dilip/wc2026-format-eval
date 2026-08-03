@@ -1,5 +1,66 @@
 # Decision Log — 2026 World Cup Format Evaluation
 
+## 2026-08-02 — Issue #41: Build 10, Power BI layer built on the approved dashboard plan
+
+**Decision**: `build_10_draft.txt` (session-end 2026-08-02) was approved
+as-is — no changes to page count, order, visuals, or metrics — and
+implementation started immediately per explicit user instruction. Built
+with the `powerbi-modeling-mcp` Tabular Object Model server against an
+offline connection, then opened in Power BI Desktop for report-visual
+authoring (visual.json construction needs live field-binding validation
+that only Desktop's editor reliably provides — hand-authoring that part
+of PBIR was judged too risky to attempt blind).
+
+**Semantic model**: one flat table per `SHARED` secure view (8 tables:
+`Tournament Format Comparison`, `Competitive Balance`, `Group
+Difficulty`, `Upset Rate`, `Confederation Performance`, `Expected Vs
+Actual`, `Team Travel Rest`, `Statistical Validation`), columns matching
+the underlying `sql/analytics/*.sql` view DDL exactly, Import-mode
+partitions querying Snowflake directly. No relationships between marts —
+each is already grain-correct, per the draft's dimensional-model
+section. 20 explicit DAX measures, one per numeric metric surfaced across
+the draft's 8-page visual spec.
+
+**Snowflake account identifier kept out of committed files**: the M
+partition queries reference a `SnowflakeAccount` text parameter rather
+than a hardcoded `UMKZAKJ-HRB97083.snowflakecomputing.com` string —
+consistent with this project's standing practice of keeping the account
+locator only in the gitignored `.env` (not itself a credential, but this
+repo has never put it in a tracked file before, and there was no reason
+to be the first). The committed parameter value is a placeholder;
+opening the project in Desktop requires setting it to the real value via
+Power Query's Manage Parameters before the tables can refresh.
+
+**`.pbip` project format**: PBIR (not PBIR-Legacy) for the Report
+component — each report/page metadata file has a publicly documented
+JSON schema (`report.json`, `page.json`, `pages.json`, `version.json`),
+safe to hand-author outside Desktop; PBIR-Legacy's `report.json` is
+explicitly undocumented for external editing per Microsoft's own PBIP
+docs. 8 blank pages were hand-authored first, one per the draft's
+narrative beat, in story order; actual visuals were then built live in
+Power BI Desktop against the loaded semantic model, not hand-authored.
+
+**Real data verified live before the visuals commit, not assumed**: DAX
+queries run through the MCP against the Desktop instance's actual
+Snowflake-refreshed data — row counts reconcile exactly against
+CONTEXT.md's documented figures (`Team Travel Rest` = 208 = 104 matches ×
+2 teams, `Expected Vs Actual` = 104 = 48+32+24 post-issue-#39-backfill,
+`Statistical Validation` = 6 tests, `Competitive Balance` shows
+`avg_abs_goal_diff` 1.37/1.41/1.56 across 1994/2022/2026 matching the
+draft's cited figures exactly).
+
+**`.pbix` kept local, not committed**: user decision, same reasoning as
+keeping `build_10_draft.txt` local-only — a compiled binary isn't
+git-diffable and the `.pbip` project is the actual source of truth.
+`powerbi/*.pbix` added to `.gitignore`.
+
+**MCP server needed a read-write restart mid-session**: the
+`powerbi-modeling-mcp` server was configured with a `--readonly` startup
+flag in the user's global `~/.claude.json`, blocking all `Create`/
+`Update` operations until the user edited the flag to `--read-write` and
+the server reconnected — table/measure/partition creation all failed
+with an explicit read-only error until then, not a silent no-op.
+
 ## 2026-08-02 — Issue #39: FIFA ranking snapshots cross-checked, 9 gaps backfilled
 
 **Decision**: `data/raw/wc_fifa_ranking_snapshots.csv` now carries a second,
