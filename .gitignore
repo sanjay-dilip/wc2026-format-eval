@@ -28,3 +28,12 @@ build_10_draft.txt
 # project, not committed (large, non-diffable binary; the .pbip is the
 # source of truth). See docs/decision_log.md, issue #41.
 powerbi/*.pbix
+
+# Build plan has served its purpose (Builds 0-10 all done) — kept locally
+# for reference only, not part of the committed surface a stranger needs.
+# User decision, issue #43.
+docs/build_plan.md
+
+# Working reference doc for Build C itself, not a committed deliverable —
+# same reasoning as build_plan.md above. User decision, issue #43.
+CONSOLIDATION_PROTOCOL.md
