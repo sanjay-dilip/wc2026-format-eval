@@ -1,0 +1,95 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "35e557aab60d4849067b",
+  "position": {
+    "x": 640.97735874111947,
+    "y": 111.67385963747428,
+    "z": 2,
+    "height": 608.85200185910639,
+    "width": 639.447579841976,
+    "tabOrder": 2
+  },
+  "visual": {
+    "visualType": "clusteredBarChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Confederation Performance"
+                    }
+                  },
+                  "Property": "confederation_name"
+                }
+              },
+              "queryRef": "Confederation Performance.confederation_name",
+              "nativeQueryRef": "confederation_name",
+              "active": true
+            }
+          ]
+        },
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Confederation Performance"
+                    }
+                  },
+                  "Property": "tournament_year"
+                }
+              },
+              "queryRef": "Confederation Performance.tournament_year",
+              "nativeQueryRef": "tournament_year"
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Confederation Performance"
+                    }
+                  },
+                  "Property": "Matches Played (Confederation)"
+                }
+              },
+              "queryRef": "Confederation Performance.Matches Played (Confederation)",
+              "nativeQueryRef": "Matches Played (Confederation)"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Confederation Performance"
+                    }
+                  },
+                  "Property": "Avg Goal Diff (Confederation)"
+                }
+              },
+              "queryRef": "Confederation Performance.Avg Goal Diff (Confederation)",
+              "nativeQueryRef": "Avg Goal Diff (Confederation)"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "isDefaultSort": true
+      }
+    }
+  }
+}

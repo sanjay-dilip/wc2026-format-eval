@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "0e264d1100b13260a186",
+  "position": {
+    "x": 6.1191155965739332,
+    "y": 477.29101653276678,
+    "z": 2001,
+    "height": 102.49518624261337,
+    "width": 1265.1271495916606,
+    "tabOrder": 2001
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "STRUCTURALLY DIFFERENT TOURNAMENTS (24/32/8-TEAM FORMAT), SEE FORMAT_LABEL, NOT THE SAME FORMAT AT DIFFERENT SIZES",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "16pt"
+                    }
+                  }
+                ],
+                "horizontalTextAlignment": "center"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

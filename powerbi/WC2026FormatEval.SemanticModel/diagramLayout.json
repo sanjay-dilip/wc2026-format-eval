@@ -1,0 +1,126 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 976,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 0,
+            "y": 14
+          },
+          "nodeIndex": "Competitive Balance",
+          "nodeLineageTag": "6bb92dbf-de00-42a0-afba-5695443e7454",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 284,
+            "y": 14
+          },
+          "nodeIndex": "Confederation Performance",
+          "nodeLineageTag": "19cc467f-7fec-4ed0-be05-3d7bf6238f25",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 568,
+            "y": 38
+          },
+          "nodeIndex": "Expected Vs Actual",
+          "nodeLineageTag": "d36e64fe-4c7c-4684-929b-64d616473ac1",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 852,
+            "y": 14
+          },
+          "nodeIndex": "Group Difficulty",
+          "nodeLineageTag": "90f9b990-efcf-423a-b90b-c6b7036ed5e8",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1136,
+            "y": 0
+          },
+          "nodeIndex": "Statistical Validation",
+          "nodeLineageTag": "66efb9e4-ac4a-4f70-936d-a3a20fe69721",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1420,
+            "y": 0
+          },
+          "nodeIndex": "Team Travel Rest",
+          "nodeLineageTag": "3788ef47-4fbc-47ad-ae6d-32471c12657c",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1704,
+            "y": 0
+          },
+          "nodeIndex": "Tournament Format Comparison",
+          "nodeLineageTag": "26e086ef-67eb-4027-a6ec-f26870590200",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1988,
+            "y": 0
+          },
+          "nodeIndex": "Upset Rate",
+          "nodeLineageTag": "d024a027-c1f1-4f7b-81ce-e7cde0d83f16",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

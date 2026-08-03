@@ -1,0 +1,69 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "ff88fde2d647d5278037",
+  "position": {
+    "x": 0,
+    "y": 359.49804129871859,
+    "z": 2,
+    "height": 361.02782019786207,
+    "width": 639.447579841976,
+    "tabOrder": 2
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Upset Rate"
+                    }
+                  },
+                  "Property": "Eligible Match Count"
+                }
+              },
+              "queryRef": "Upset Rate.Eligible Match Count",
+              "nativeQueryRef": "Eligible Match Count"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Upset Rate"
+                    }
+                  },
+                  "Property": "Decisive Match Count"
+                }
+              },
+              "queryRef": "Upset Rate.Decisive Match Count",
+              "nativeQueryRef": "Decisive Match Count"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Upset Rate"
+                  }
+                },
+                "Property": "Eligible Match Count"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    }
+  }
+}

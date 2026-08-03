@@ -18,11 +18,15 @@ table 'Group Difficulty'
 		lineageTag: 9fed26f6-0d89-4ddc-9736-07087bd5bbfd
 
 	column group_id
-		dataType: int64
+		dataType: double
 		isKey
 		lineageTag: 0eaee752-e1ca-4a47-be1b-7c578db9dc14
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: GROUP_ID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column group_letter
 		dataType: string
@@ -31,16 +35,20 @@ table 'Group Difficulty'
 		sourceColumn: GROUP_LETTER
 
 	column teams_in_group
-		dataType: int64
+		dataType: double
 		lineageTag: 596f46a5-71d2-482b-9ebc-3e8715402b74
 		summarizeBy: sum
 		sourceColumn: TEAMS_IN_GROUP
 
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column teams_counted
-		dataType: int64
+		dataType: double
 		lineageTag: 9a82218f-a833-4d01-98b2-b95250a76369
 		summarizeBy: sum
 		sourceColumn: TEAMS_COUNTED
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column avg_fifa_ranking
 		dataType: double
@@ -58,4 +66,8 @@ table 'Group Difficulty'
 				    View = SHARED_Schema{[Name="GROUP_DIFFICULTY",Kind="View"]}[Data]
 				in
 				    View
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
 

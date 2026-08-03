@@ -23,35 +23,47 @@ table 'Upset Rate'
 		lineageTag: 208a1f3d-470c-4b91-b24d-6b9775c65797
 
 	column tournament_year
-		dataType: int64
+		dataType: double
 		isKey
 		lineageTag: ff16bb11-3ee8-4dd2-bd9d-a8429d2b04af
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: TOURNAMENT_YEAR
 
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column eligible_match_count
-		dataType: int64
+		dataType: double
 		lineageTag: 9c952453-de49-4b15-a1a3-901dd9cd488c
 		summarizeBy: sum
 		sourceColumn: ELIGIBLE_MATCH_COUNT
 
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column draw_count
-		dataType: int64
+		dataType: double
 		lineageTag: 2d668ba6-4ed5-4e81-8481-61af42f5d49a
 		summarizeBy: sum
 		sourceColumn: DRAW_COUNT
 
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column decisive_match_count
-		dataType: int64
+		dataType: double
 		lineageTag: 14d796fd-e4bd-4e3b-826c-b258492b4a7d
 		summarizeBy: sum
 		sourceColumn: DECISIVE_MATCH_COUNT
 
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column upset_count
-		dataType: int64
+		dataType: double
 		lineageTag: c7015f9f-ccff-4f58-b50f-226c1d631ee4
 		summarizeBy: sum
 		sourceColumn: UPSET_COUNT
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column upset_rate_pct
 		dataType: double
@@ -77,4 +89,8 @@ table 'Upset Rate'
 				    View = SHARED_Schema{[Name="UPSET_RATE",Kind="View"]}[Data]
 				in
 				    View
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
 

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "bef31066080e7ccddd10",
+  "position": {
+    "x": 614.97111745568031,
+    "y": 0,
+    "z": 1000,
+    "height": 445.16565965075364,
+    "width": 656.27514773255427,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "advancedSlicerVisual",
+    "query": {
+      "queryState": {
+        "Label": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Tournament Format Comparison"
+                    }
+                  },
+                  "Property": "Match Count"
+                }
+              },
+              "queryRef": "Tournament Format Comparison.Match Count",
+              "nativeQueryRef": "Match Count"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Tournament Format Comparison"
+                    }
+                  },
+                  "Property": "tournament_year"
+                }
+              },
+              "queryRef": "Tournament Format Comparison.tournament_year",
+              "nativeQueryRef": "tournament_year"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Tournament Format Comparison"
+                  }
+                },
+                "Property": "Match Count"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    }
+  }
+}

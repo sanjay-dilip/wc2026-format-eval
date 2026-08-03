@@ -6,7 +6,11 @@ model WC2026FormatEval
 		legacyRedirects
 		returnErrorValuesAsNull
 
-annotation PBI_ProTooling = ["MCP-PBIModeling"]
+annotation PBI_ProTooling = ["MCP-PBIModeling","DevMode"]
+
+annotation PBI_QueryOrder = ["Tournament Format Comparison","Competitive Balance","Group Difficulty","Upset Rate","Confederation Performance","Expected Vs Actual","Team Travel Rest","Statistical Validation","SnowflakeAccount"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
 
 ref table 'Tournament Format Comparison'
 ref table 'Competitive Balance'
@@ -16,4 +20,7 @@ ref table 'Confederation Performance'
 ref table 'Expected Vs Actual'
 ref table 'Team Travel Rest'
 ref table 'Statistical Validation'
+ref table DateTableTemplate_578f64cb-466e-4e18-bc51-0e334e0557cf
+ref table LocalDateTable_c3014c6b-eba5-46ff-84e4-176e42086da9
+ref table LocalDateTable_c795c2f8-8787-4ae0-a756-c9f282038a71
 

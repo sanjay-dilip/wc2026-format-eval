@@ -1,0 +1,10 @@
+relationship c923cb8d-3058-4ad1-af18-b8055a292597
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Team Travel Rest'.match_date
+	toColumn: LocalDateTable_c3014c6b-eba5-46ff-84e4-176e42086da9.Date
+
+relationship 461d39a6-1680-49d2-888c-306eb60cfa86
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Team Travel Rest'.previous_match_date
+	toColumn: LocalDateTable_c795c2f8-8787-4ae0-a756-c9f282038a71.Date
+

@@ -3,10 +3,14 @@ table 'Expected Vs Actual'
 	lineageTag: d36e64fe-4c7c-4684-929b-64d616473ac1
 
 	column tournament_year
-		dataType: int64
+		dataType: double
 		lineageTag: 23ed1794-da86-4dd9-b2f2-6b88ea7f46ef
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: TOURNAMENT_YEAR
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column team_name
 		dataType: string
@@ -15,22 +19,34 @@ table 'Expected Vs Actual'
 		sourceColumn: TEAM_NAME
 
 	column fifa_ranking
-		dataType: int64
+		dataType: double
 		lineageTag: 3ea55e0f-f906-41f0-932a-8775bff64e71
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: FIFA_RANKING
 
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column matches_played
-		dataType: int64
+		dataType: double
 		lineageTag: 60be7b0b-8098-4a92-896e-86ab47f3bae8
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: MATCHES_PLAYED
 
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column furthest_stage_order
-		dataType: int64
+		dataType: double
 		lineageTag: 71a37519-4fa8-41c5-ad6b-17bb45535649
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: FURTHEST_STAGE_ORDER
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column actual_finish_method
 		dataType: string
@@ -48,4 +64,8 @@ table 'Expected Vs Actual'
 				    View = SHARED_Schema{[Name="EXPECTED_VS_ACTUAL",Kind="View"]}[Data]
 				in
 				    View
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
 

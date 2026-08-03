@@ -1,0 +1,88 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "616b618e103b18be2270",
+  "position": {
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "height": 359.49804129871859,
+    "width": 1280.4249385830956,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Upset Rate"
+                    }
+                  },
+                  "Property": "tournament_year"
+                }
+              },
+              "queryRef": "Upset Rate.tournament_year",
+              "nativeQueryRef": "tournament_year",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Upset Rate"
+                    }
+                  },
+                  "Property": "Upset Rate %"
+                }
+              },
+              "queryRef": "Upset Rate.Upset Rate %",
+              "nativeQueryRef": "Upset Rate %"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Upset Rate"
+                    }
+                  },
+                  "Property": "Draw Rate %"
+                }
+              },
+              "queryRef": "Upset Rate.Draw Rate %",
+              "nativeQueryRef": "Draw Rate %"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Upset Rate"
+                  }
+                },
+                "Property": "Upset Rate %"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    }
+  }
+}

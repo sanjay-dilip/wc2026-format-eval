@@ -3,11 +3,15 @@ table 'Statistical Validation'
 	lineageTag: 66efb9e4-ac4a-4f70-936d-a3a20fe69721
 
 	column row_id
-		dataType: int64
+		dataType: double
 		isKey
 		lineageTag: 4bf2e275-a9c9-4933-a4e3-1734c45ea0f0
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: ROW_ID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column metric_name
 		dataType: string
@@ -85,4 +89,8 @@ table 'Statistical Validation'
 				    View = SHARED_Schema{[Name="STATISTICAL_VALIDATION",Kind="View"]}[Data]
 				in
 				    View
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
 

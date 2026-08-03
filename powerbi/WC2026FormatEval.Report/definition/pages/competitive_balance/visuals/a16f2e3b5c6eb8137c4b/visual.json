@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "a16f2e3b5c6eb8137c4b",
+  "position": {
+    "x": 74.959166058030675,
+    "y": 605.79244406081932,
+    "z": 2,
+    "height": 114.73341743576124,
+    "width": 1177.9297523404821,
+    "tabOrder": 2
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "NOT STATISTICALLY SIGNIFICANT (P=0.40, MANN-WHITNEY U, RANK-BISEARIAL R = 0.06. 2026'S MEAN IS SLIGHTLY HIGHER (1.56 VS ~1.39 POOLED) - DIRECTIONAL ONLY, NOT CAUSAL",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "18pt"
+                    }
+                  }
+                ],
+                "horizontalTextAlignment": "center"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

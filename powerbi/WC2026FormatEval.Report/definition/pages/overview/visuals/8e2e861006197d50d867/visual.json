@@ -1,0 +1,73 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "8e2e861006197d50d867",
+  "position": {
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "height": 445.16565965075364,
+    "width": 614.97111745568031,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "advancedSlicerVisual",
+    "query": {
+      "queryState": {
+        "Label": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Tournament Format Comparison"
+                    }
+                  },
+                  "Property": "Team Count"
+                }
+              },
+              "queryRef": "Tournament Format Comparison.Team Count",
+              "nativeQueryRef": "Team Count"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Tournament Format Comparison"
+                    }
+                  },
+                  "Property": "tournament_year"
+                }
+              },
+              "queryRef": "Tournament Format Comparison.tournament_year",
+              "nativeQueryRef": "tournament_year"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Tournament Format Comparison"
+                  }
+                },
+                "Property": "Team Count"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    }
+  }
+}

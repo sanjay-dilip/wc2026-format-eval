@@ -18,10 +18,14 @@ table 'Confederation Performance'
 		lineageTag: 5ff273bb-63ac-47e4-9303-45f41d34b839
 
 	column tournament_year
-		dataType: int64
+		dataType: double
 		lineageTag: 741db156-9fc5-4537-a3bc-c4b264a43039
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: TOURNAMENT_YEAR
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column confederation_name
 		dataType: string
@@ -30,10 +34,12 @@ table 'Confederation Performance'
 		sourceColumn: CONFEDERATION_NAME
 
 	column matches_played
-		dataType: int64
+		dataType: double
 		lineageTag: 5dab7db1-9dd1-4478-86a4-576ad1af8bcc
 		summarizeBy: sum
 		sourceColumn: MATCHES_PLAYED
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column win_rate
 		dataType: double
@@ -57,4 +63,8 @@ table 'Confederation Performance'
 				    View = SHARED_Schema{[Name="CONFEDERATION_PERFORMANCE",Kind="View"]}[Data]
 				in
 				    View
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
 

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "011d1990b6ea2e792990",
+  "position": {
+    "x": 0,
+    "y": 19.887125688865282,
+    "z": 3,
+    "height": 91.786733948609,
+    "width": 1280.4249385830956,
+    "tabOrder": 3
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "SIGNIFICANT, MEDIUM EFFECT FOR 2026 (KRUSKAL-WALLIS P=0.0009, EPS^2=0.079 - DOES NOT SAY WHICH CONFEDERATIONS DIFFER FROM WHICH",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "18pt"
+                    }
+                  }
+                ],
+                "horizontalTextAlignment": "center"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

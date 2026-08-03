@@ -1,0 +1,88 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "789901e3e384287d4a20",
+  "position": {
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "height": 425.27853396188834,
+    "width": 1280.4249385830956,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "clusteredBarChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Group Difficulty"
+                    }
+                  },
+                  "Property": "group_letter"
+                }
+              },
+              "queryRef": "Group Difficulty.group_letter",
+              "nativeQueryRef": "group_letter",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Group Difficulty"
+                    }
+                  },
+                  "Property": "Avg FIFA Ranking (Group)"
+                }
+              },
+              "queryRef": "Group Difficulty.Avg FIFA Ranking (Group)",
+              "nativeQueryRef": "Avg FIFA Ranking (Group)"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Group Difficulty"
+                  }
+                },
+                "Property": "Avg FIFA Ranking (Group)"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "valueAxis": [
+        {
+          "properties": {
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
