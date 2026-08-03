@@ -1,7 +1,8 @@
 # Cost Report
 
 Compiled 2026-08-03, against the live primary Snowflake trial account
-(`UMKZAKJ-HRB97083`), during Build C. Every figure below is a live query
+(identifier kept out of this file per this project's standing convention
+— see `.env`), during Build C. Every figure below is a live query
 result, not an estimate — see the raw output referenced per section.
 The trial's ~8-day window started 2026-07-30 and expires ~2026-08-07; this
 report was pulled while the account was still queryable, since a future
