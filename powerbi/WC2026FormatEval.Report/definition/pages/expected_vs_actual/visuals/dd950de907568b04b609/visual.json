@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "dd950de907568b04b609",
+  "position": {
+    "x": 50.482703671734946,
+    "y": 143.79921651948743,
+    "z": 2,
+    "height": 84.137839452891583,
+    "width": 1180.989310138769,
+    "tabOrder": 2
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "2026 USES REAL STAGE_ORDER (LOAD-BEARING); 2022/1994 USE A MATCH-COUNT PROXY (DIRECTIONAL ONLY); SPEARMAN'S RHO: 2026 = -0.64 (N=48, P<0.0001), 2022 = -0.48 (N=32, P=0.06), 1994 = -0.61 (N=24, P = 0.002)",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "18pt"
+                    }
+                  }
+                ],
+                "horizontalTextAlignment": "center"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

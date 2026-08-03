@@ -1,0 +1,136 @@
+/// One row per team per 2026 match — distance from previous match's venue and rest days since. Source: SHARED.TEAM_TRAVEL_REST. 2026 only; NULL distance/rest for a team's tournament opener.
+table 'Team Travel Rest'
+	lineageTag: 3788ef47-4fbc-47ad-ae6d-32471c12657c
+
+	/// Mean travel distance from a team's previous match venue. NULL-safe: excludes tournament-opener rows automatically (AVERAGE ignores blanks).
+	measure 'Avg Distance Km' = AVERAGE('Team Travel Rest'[distance_km])
+		formatString: 0.0
+		lineageTag: a1bbc090-5b76-4899-ba6b-f9b23a6afd6a
+
+	/// Mean days since a team's previous match. NULL-safe: excludes tournament-opener rows automatically.
+	measure 'Avg Rest Days' = AVERAGE('Team Travel Rest'[rest_days])
+		formatString: 0.0
+		lineageTag: 554e38eb-8afc-4176-8385-a0da35049e28
+
+	column row_id
+		dataType: double
+		isKey
+		lineageTag: 426af91c-b6db-49ce-a08b-67f0a3ccadd2
+		summarizeBy: sum
+		sourceColumn: ROW_ID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column team_id
+		dataType: double
+		lineageTag: 8ea38b86-cc4b-48ca-94be-2732635a9977
+		summarizeBy: sum
+		sourceColumn: TEAM_ID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column match_id
+		dataType: double
+		lineageTag: 529a6123-eec8-408d-aa1d-58118e8a85de
+		summarizeBy: sum
+		sourceColumn: MATCH_ID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column match_date
+		dataType: dateTime
+		formatString: yyyy-MM-dd
+		lineageTag: cec7574e-f1e1-4681-8287-55bf257c9ec5
+		summarizeBy: none
+		sourceColumn: MATCH_DATE
+
+		variation Variation
+			isDefault
+			relationship: c923cb8d-3058-4ad1-af18-b8055a292597
+			defaultHierarchy: LocalDateTable_c3014c6b-eba5-46ff-84e4-176e42086da9.'Date Hierarchy'
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column venue_id
+		dataType: double
+		lineageTag: 72d09a98-80a8-49a1-8150-2e0017f7dfea
+		summarizeBy: sum
+		sourceColumn: VENUE_ID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column previous_match_id
+		dataType: double
+		lineageTag: 2e12738f-079a-4bf5-a780-1ff7d856ed30
+		summarizeBy: sum
+		sourceColumn: PREVIOUS_MATCH_ID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column previous_venue_id
+		dataType: double
+		lineageTag: 417e85eb-fafd-4b33-b69f-368567cefc03
+		summarizeBy: sum
+		sourceColumn: PREVIOUS_VENUE_ID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column previous_match_date
+		dataType: dateTime
+		formatString: yyyy-MM-dd
+		lineageTag: 145fd373-e29c-4df6-ae1d-264bb58ab5da
+		summarizeBy: none
+		sourceColumn: PREVIOUS_MATCH_DATE
+
+		variation Variation
+			isDefault
+			relationship: 461d39a6-1680-49d2-888c-306eb60cfa86
+			defaultHierarchy: LocalDateTable_c795c2f8-8787-4ae0-a756-c9f282038a71.'Date Hierarchy'
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column distance_km
+		dataType: double
+		lineageTag: 26b60679-1298-4620-8176-9cb46f001857
+		summarizeBy: sum
+		sourceColumn: DISTANCE_KM
+
+		annotation SummarizationSetBy = Automatic
+
+	column rest_days
+		dataType: double
+		lineageTag: 4fe1933f-bfc5-4a13-aa43-74f5a251d920
+		summarizeBy: sum
+		sourceColumn: REST_DAYS
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'Team Travel Rest' = m
+		mode: import
+		source =
+				let
+				    Source = Snowflake.Databases(SnowflakeAccount, "COMPUTE_WH"),
+				    WC2026_Database = Source{[Name="WC2026",Kind="Database"]}[Data],
+				    SHARED_Schema = WC2026_Database{[Name="SHARED",Kind="Schema"]}[Data],
+				    View = SHARED_Schema{[Name="TEAM_TRAVEL_REST",Kind="View"]}[Data]
+				in
+				    View
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

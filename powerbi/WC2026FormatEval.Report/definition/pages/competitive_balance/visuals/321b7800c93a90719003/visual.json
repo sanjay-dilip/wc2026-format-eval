@@ -1,0 +1,74 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "321b7800c93a90719003",
+  "position": {
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "height": 555.30974038908437,
+    "width": 622.62001195139771,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Competitive Balance"
+                    }
+                  },
+                  "Property": "tournament_year"
+                }
+              },
+              "queryRef": "Competitive Balance.tournament_year",
+              "nativeQueryRef": "tournament_year",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Competitive Balance"
+                    }
+                  },
+                  "Property": "Avg Abs Goal Diff"
+                }
+              },
+              "queryRef": "Competitive Balance.Avg Abs Goal Diff",
+              "nativeQueryRef": "Avg Abs Goal Diff"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Competitive Balance"
+                  }
+                },
+                "Property": "Avg Abs Goal Diff"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    }
+  }
+}

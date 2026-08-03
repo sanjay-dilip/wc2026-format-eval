@@ -1,0 +1,80 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "dff1a3f008a7a887db09",
+  "position": {
+    "x": 639.447579841976,
+    "y": 443.63588075161016,
+    "z": 1,
+    "height": 276.88998074497044,
+    "width": 640.97735874111947,
+    "tabOrder": 1
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Group Difficulty"
+                    }
+                  },
+                  "Property": "group_letter"
+                }
+              },
+              "queryRef": "Group Difficulty.group_letter",
+              "nativeQueryRef": "group_letter"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Group Difficulty"
+                    }
+                  },
+                  "Property": "Teams Counted"
+                }
+              },
+              "queryRef": "Group Difficulty.Teams Counted",
+              "nativeQueryRef": "Teams Counted"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Group Difficulty"
+                    }
+                  },
+                  "Property": "Teams In Group"
+                }
+              },
+              "queryRef": "Group Difficulty.Teams In Group",
+              "nativeQueryRef": "Teams In Group"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'growToFit'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,169 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "722ee6d87935e81c1e05",
+  "position": {
+    "x": 0,
+    "y": 227.937055972379,
+    "z": 0,
+    "height": 458.93366974304496,
+    "width": 1280.4249385830956,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "scatterChart",
+    "query": {
+      "queryState": {
+        "Series": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Expected Vs Actual"
+                    }
+                  },
+                  "Property": "team_name"
+                }
+              },
+              "queryRef": "Expected Vs Actual.team_name",
+              "nativeQueryRef": "team_name"
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Expected Vs Actual"
+                        }
+                      },
+                      "Property": "actual_finish_method"
+                    }
+                  },
+                  "Function": 3
+                }
+              },
+              "queryRef": "Min(Expected Vs Actual.actual_finish_method)",
+              "nativeQueryRef": "First actual_finish_method"
+            }
+          ]
+        },
+        "X": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Expected Vs Actual"
+                        }
+                      },
+                      "Property": "fifa_ranking"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Expected Vs Actual.fifa_ranking)",
+              "nativeQueryRef": "fifa_ranking",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Expected Vs Actual"
+                    }
+                  },
+                  "Property": "furthest_stage_order"
+                }
+              },
+              "queryRef": "Expected Vs Actual.furthest_stage_order",
+              "nativeQueryRef": "furthest_stage_order"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "898cca40e00269002750",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Expected Vs Actual"
+                  }
+                },
+                "Property": "fifa_ranking"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "4a1cdd2fc10063802853",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Expected Vs Actual"
+              }
+            },
+            "Property": "team_name"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "2d1dc12191569826ee67",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Expected Vs Actual"
+              }
+            },
+            "Property": "tournament_year"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User",
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "isInvertedSelectionMode": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

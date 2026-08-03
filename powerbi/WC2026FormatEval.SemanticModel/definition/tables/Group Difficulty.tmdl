@@ -1,0 +1,73 @@
+/// One row per 2026 group (A-L) — avg FIFA ranking of counted teams. Source: SHARED.GROUP_DIFFICULTY. 2026 only.
+table 'Group Difficulty'
+	lineageTag: 90f9b990-efcf-423a-b90b-c6b7036ed5e8
+
+	/// Average FIFA ranking of counted teams in the group; lower = harder group.
+	measure 'Avg FIFA Ranking (Group)' = AVERAGE('Group Difficulty'[avg_fifa_ranking])
+		formatString: 0.0
+		lineageTag: bd086a0a-f081-4bd9-8bc2-9c5cae149fb2
+
+	/// Teams in the group with a non-NULL FIFA ranking (post issue #39 backfill, should equal Teams In Group for every group).
+	measure 'Teams Counted' = SUM('Group Difficulty'[teams_counted])
+		formatString: 0
+		lineageTag: fc83f0df-8c7a-40a7-a843-5356a7a5a978
+
+	/// Total teams assigned to the group (always 4).
+	measure 'Teams In Group' = SUM('Group Difficulty'[teams_in_group])
+		formatString: 0
+		lineageTag: 9fed26f6-0d89-4ddc-9736-07087bd5bbfd
+
+	column group_id
+		dataType: double
+		isKey
+		lineageTag: 0eaee752-e1ca-4a47-be1b-7c578db9dc14
+		summarizeBy: sum
+		sourceColumn: GROUP_ID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column group_letter
+		dataType: string
+		lineageTag: 3d1b1f81-ebf6-4cee-af35-70b796535846
+		summarizeBy: none
+		sourceColumn: GROUP_LETTER
+
+	column teams_in_group
+		dataType: double
+		lineageTag: 596f46a5-71d2-482b-9ebc-3e8715402b74
+		summarizeBy: sum
+		sourceColumn: TEAMS_IN_GROUP
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column teams_counted
+		dataType: double
+		lineageTag: 9a82218f-a833-4d01-98b2-b95250a76369
+		summarizeBy: sum
+		sourceColumn: TEAMS_COUNTED
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column avg_fifa_ranking
+		dataType: double
+		lineageTag: 403c2011-402d-40ef-8a17-e809a9de4a54
+		summarizeBy: average
+		sourceColumn: AVG_FIFA_RANKING
+
+	partition 'Group Difficulty' = m
+		mode: import
+		source =
+				let
+				    Source = Snowflake.Databases(SnowflakeAccount, "COMPUTE_WH"),
+				    WC2026_Database = Source{[Name="WC2026",Kind="Database"]}[Data],
+				    SHARED_Schema = WC2026_Database{[Name="SHARED",Kind="Schema"]}[Data],
+				    View = SHARED_Schema{[Name="GROUP_DIFFICULTY",Kind="View"]}[Data]
+				in
+				    View
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

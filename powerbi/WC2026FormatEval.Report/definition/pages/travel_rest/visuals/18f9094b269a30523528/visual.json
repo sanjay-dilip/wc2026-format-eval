@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "18f9094b269a30523528",
+  "position": {
+    "x": 90.256955049465518,
+    "y": 665.45382112741527,
+    "z": 4,
+    "height": 55.0720403691654,
+    "width": 1099.9110284841645,
+    "tabOrder": 4
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "NO HISTORICAL COMPARISON POSSIBLE - 2022/1994 HAVE NO VENUE DATA IN THIS PROJECT",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "18pt"
+                    }
+                  }
+                ],
+                "horizontalTextAlignment": "center"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

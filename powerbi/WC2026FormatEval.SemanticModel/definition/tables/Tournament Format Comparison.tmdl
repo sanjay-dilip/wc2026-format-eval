@@ -1,0 +1,112 @@
+/// One row per tournament (2026/2022/1994) — team count, match count, and score-derived format metrics. Source: SHARED.TOURNAMENT_FORMAT_COMPARISON.
+table 'Tournament Format Comparison'
+	lineageTag: 26e086ef-67eb-4027-a6ec-f26870590200
+
+	/// Teams competing, per tournament (24/32/48).
+	measure 'Team Count' = AVERAGE('Tournament Format Comparison'[team_count])
+		formatString: 0
+		lineageTag: ae75015e-7a0e-4211-ad03-ca2a8baf471e
+
+	/// Total matches played, per tournament.
+	measure 'Match Count' = SUM('Tournament Format Comparison'[match_count])
+		formatString: 0
+		lineageTag: 8ddf428e-160c-4f86-80aa-125e2a325b22
+
+	/// FT+ET combined goals per match.
+	measure 'Avg Goals per Match' = AVERAGE('Tournament Format Comparison'[avg_goals_per_match])
+		formatString: 0.00
+		lineageTag: bce4e4cb-6b29-45e9-9359-7c4686b06dbb
+
+	/// % of matches decided by exactly 1 goal.
+	measure 'Pct One Goal Margin' = AVERAGE('Tournament Format Comparison'[pct_one_goal_margin])
+		formatString: 0.0"%"
+		lineageTag: b5c0fa25-d86b-46ea-8f99-51f030887787
+
+	/// % of matches level after FT+ET (includes shootout matches).
+	measure 'Pct Drawn After ET' = AVERAGE('Tournament Format Comparison'[pct_drawn_after_et])
+		formatString: 0.0"%"
+		lineageTag: 3a661bce-ffa7-4331-addb-07a7ef376c2f
+
+	/// Count of matches decided by penalty shootout.
+	measure 'Shootout Decided Matches' = SUM('Tournament Format Comparison'[shootout_decided_matches])
+		formatString: 0
+		lineageTag: dc0c0f0c-3a5a-49a3-867e-52d82b099a5c
+
+	column tournament_year
+		dataType: double
+		isKey
+		lineageTag: f1dcba29-81b9-4f1e-b9e6-5c4ee5b43cc0
+		summarizeBy: sum
+		sourceColumn: TOURNAMENT_YEAR
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column team_count
+		dataType: double
+		lineageTag: b1b61ad8-d5a3-409b-9f01-32872d360f7d
+		summarizeBy: sum
+		sourceColumn: TEAM_COUNT
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column format_label
+		dataType: string
+		lineageTag: 3685d116-df62-43af-9df0-334e8a87bee1
+		summarizeBy: none
+		sourceColumn: FORMAT_LABEL
+
+	column match_count
+		dataType: double
+		lineageTag: e897c9b1-dbee-4e49-a1cc-0b180d9a6a2a
+		summarizeBy: sum
+		sourceColumn: MATCH_COUNT
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column avg_goals_per_match
+		dataType: double
+		lineageTag: 492198b7-cc88-419b-8cd3-624fee3c97ce
+		summarizeBy: average
+		sourceColumn: AVG_GOALS_PER_MATCH
+
+	column pct_one_goal_margin
+		dataType: double
+		formatString: 0.0"%"
+		lineageTag: ed32d48d-041b-4031-8160-2f79ca43dd8f
+		summarizeBy: average
+		sourceColumn: PCT_ONE_GOAL_MARGIN
+
+	column pct_drawn_after_et
+		dataType: double
+		formatString: 0.0"%"
+		lineageTag: ee487ff3-88a0-46df-be7a-0cd0faa23ff9
+		summarizeBy: average
+		sourceColumn: PCT_DRAWN_AFTER_ET
+
+	column shootout_decided_matches
+		dataType: double
+		lineageTag: 25b4ed80-4dcf-4d98-a2e0-dd6fe66ad11f
+		summarizeBy: sum
+		sourceColumn: SHOOTOUT_DECIDED_MATCHES
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'Tournament Format Comparison' = m
+		mode: import
+		source =
+				let
+				    Source = Snowflake.Databases(SnowflakeAccount, "COMPUTE_WH"),
+				    WC2026_Database = Source{[Name="WC2026",Kind="Database"]}[Data],
+				    SHARED_Schema = WC2026_Database{[Name="SHARED",Kind="Schema"]}[Data],
+				    TOURNAMENT_FORMAT_COMPARISON_View = SHARED_Schema{[Name="TOURNAMENT_FORMAT_COMPARISON",Kind="View"]}[Data]
+				in
+				    TOURNAMENT_FORMAT_COMPARISON_View
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

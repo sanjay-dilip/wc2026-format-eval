@@ -1,0 +1,15 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.1.0/schema.json",
+  "pageOrder": [
+    "overview",
+    "competitive_balance",
+    "upset_rate",
+    "draw_fairness",
+    "expected_vs_actual",
+    "travel_rest",
+    "confederation_performance",
+    "methodology"
+  ],
+  "activePageName": "methodology",
+  "landingPageName": "overview"
+}

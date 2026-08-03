@@ -1,0 +1,138 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "912c77adc02199038db3",
+  "position": {
+    "x": 0,
+    "y": 593.55421286767148,
+    "z": 2000,
+    "height": 126.97164862890911,
+    "width": 1280.4249385830956,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Tournament Format Comparison"
+                    }
+                  },
+                  "Property": "tournament_year"
+                }
+              },
+              "queryRef": "Tournament Format Comparison.tournament_year",
+              "nativeQueryRef": "tournament_year"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Tournament Format Comparison"
+                    }
+                  },
+                  "Property": "format_label"
+                }
+              },
+              "queryRef": "Tournament Format Comparison.format_label",
+              "nativeQueryRef": "format_label"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Tournament Format Comparison"
+                    }
+                  },
+                  "Property": "Avg Goals per Match"
+                }
+              },
+              "queryRef": "Tournament Format Comparison.Avg Goals per Match",
+              "nativeQueryRef": "Avg Goals per Match"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Tournament Format Comparison"
+                    }
+                  },
+                  "Property": "Pct One Goal Margin"
+                }
+              },
+              "queryRef": "Tournament Format Comparison.Pct One Goal Margin",
+              "nativeQueryRef": "Pct One Goal Margin"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Tournament Format Comparison"
+                    }
+                  },
+                  "Property": "Pct Drawn After ET"
+                }
+              },
+              "queryRef": "Tournament Format Comparison.Pct Drawn After ET",
+              "nativeQueryRef": "Pct Drawn After ET"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Tournament Format Comparison"
+                    }
+                  },
+                  "Property": "Shootout Decided Matches"
+                }
+              },
+              "queryRef": "Tournament Format Comparison.Shootout Decided Matches",
+              "nativeQueryRef": "Shootout Decided Matches"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'growToFit'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "grid": [
+        {
+          "properties": {
+            "gridVertical": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

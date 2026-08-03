@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "8afe1274ac6e2ca18484",
+  "position": {
+    "x": 639.447579841976,
+    "y": 461.99322754133192,
+    "z": 3,
+    "height": 157.56722661177878,
+    "width": 640.97735874111947,
+    "tabOrder": 3
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "NOT STATISTICALLY SIGNIFICANT (P=0.14, FISHER'S EXACT, COHEN'S H = -0.26). 2026 HAD 80 DECISIVE MATCHES, WAS 3 BEFORE RANKING BACKFILL - SAME COMPLETENESS FOOTNOTE, NOT HIDDEN",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "18pt"
+                    }
+                  }
+                ],
+                "horizontalTextAlignment": "center"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

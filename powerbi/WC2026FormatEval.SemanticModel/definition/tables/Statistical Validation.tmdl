@@ -1,0 +1,96 @@
+/// One row per hypothesis test run against the marts above — full statistical backing (test, sample size, statistic, p-value, effect size, interpretation). Source: SHARED.STATISTICAL_VALIDATION.
+table 'Statistical Validation'
+	lineageTag: 66efb9e4-ac4a-4f70-936d-a3a20fe69721
+
+	column row_id
+		dataType: double
+		isKey
+		lineageTag: 4bf2e275-a9c9-4933-a4e3-1734c45ea0f0
+		summarizeBy: sum
+		sourceColumn: ROW_ID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column metric_name
+		dataType: string
+		lineageTag: c519bde5-c834-4303-a129-ba42ce4f3ffb
+		summarizeBy: none
+		sourceColumn: METRIC_NAME
+
+	column hypothesis
+		dataType: string
+		lineageTag: 9a072160-3296-42e1-bd1c-b7d51c8684dd
+		summarizeBy: none
+		sourceColumn: HYPOTHESIS
+
+	column comparison
+		dataType: string
+		lineageTag: cf8395d0-c10b-4803-99a4-2d8884ba4362
+		summarizeBy: none
+		sourceColumn: COMPARISON
+
+	column test_used
+		dataType: string
+		lineageTag: fa61b643-2833-4f84-8f57-3af9f51a33fa
+		summarizeBy: none
+		sourceColumn: TEST_USED
+
+	column assumption_check
+		dataType: string
+		lineageTag: 22e17b1f-7c78-4ec2-889a-bc6f7fa64da1
+		summarizeBy: none
+		sourceColumn: ASSUMPTION_CHECK
+
+	column sample_sizes
+		dataType: string
+		lineageTag: b1443fd1-ce9e-4651-8c2d-541e361b043b
+		summarizeBy: none
+		sourceColumn: SAMPLE_SIZES
+
+	column statistic
+		dataType: double
+		lineageTag: 0ed4d63b-f843-47ac-b8f7-2afebd3d92de
+		summarizeBy: none
+		sourceColumn: STATISTIC
+
+	column p_value
+		dataType: double
+		lineageTag: 02645605-4347-4b23-b1c7-6b9e6305be7b
+		summarizeBy: none
+		sourceColumn: P_VALUE
+
+	column effect_size
+		dataType: double
+		lineageTag: 0782eeff-0a55-4d9f-8d5a-f07df5bc16a1
+		summarizeBy: none
+		sourceColumn: EFFECT_SIZE
+
+	column effect_size_metric
+		dataType: string
+		lineageTag: 5b34b529-e3c1-47fa-9dc7-9964cbbf51f5
+		summarizeBy: none
+		sourceColumn: EFFECT_SIZE_METRIC
+
+	column interpretation
+		dataType: string
+		lineageTag: 43b31e04-4f8d-4ab3-bf24-52c48f9e7368
+		summarizeBy: none
+		sourceColumn: INTERPRETATION
+
+	partition 'Statistical Validation' = m
+		mode: import
+		source =
+				let
+				    Source = Snowflake.Databases(SnowflakeAccount, "COMPUTE_WH"),
+				    WC2026_Database = Source{[Name="WC2026",Kind="Database"]}[Data],
+				    SHARED_Schema = WC2026_Database{[Name="SHARED",Kind="Schema"]}[Data],
+				    View = SHARED_Schema{[Name="STATISTICAL_VALIDATION",Kind="View"]}[Data]
+				in
+				    View
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

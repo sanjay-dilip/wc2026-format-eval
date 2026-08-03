@@ -1,0 +1,236 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "329ed9f5b9ce2bac7209",
+  "position": {
+    "x": 0,
+    "y": 264.6517495518226,
+    "z": 0,
+    "height": 250.88373945953126,
+    "width": 1280.4249385830956,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Statistical Validation"
+                    }
+                  },
+                  "Property": "metric_name"
+                }
+              },
+              "queryRef": "Statistical Validation.metric_name",
+              "nativeQueryRef": "metric_name"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Statistical Validation"
+                    }
+                  },
+                  "Property": "hypothesis"
+                }
+              },
+              "queryRef": "Statistical Validation.hypothesis",
+              "nativeQueryRef": "hypothesis"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Statistical Validation"
+                    }
+                  },
+                  "Property": "comparison"
+                }
+              },
+              "queryRef": "Statistical Validation.comparison",
+              "nativeQueryRef": "comparison"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Statistical Validation"
+                    }
+                  },
+                  "Property": "test_used"
+                }
+              },
+              "queryRef": "Statistical Validation.test_used",
+              "nativeQueryRef": "test_used"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Statistical Validation"
+                    }
+                  },
+                  "Property": "sample_sizes"
+                }
+              },
+              "queryRef": "Statistical Validation.sample_sizes",
+              "nativeQueryRef": "sample_sizes"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Statistical Validation"
+                    }
+                  },
+                  "Property": "statistic"
+                }
+              },
+              "queryRef": "Statistical Validation.statistic",
+              "nativeQueryRef": "statistic"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Statistical Validation"
+                    }
+                  },
+                  "Property": "p_value"
+                }
+              },
+              "queryRef": "Statistical Validation.p_value",
+              "nativeQueryRef": "p_value"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Statistical Validation"
+                    }
+                  },
+                  "Property": "effect_size"
+                }
+              },
+              "queryRef": "Statistical Validation.effect_size",
+              "nativeQueryRef": "effect_size"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Statistical Validation"
+                    }
+                  },
+                  "Property": "effect_size_metric"
+                }
+              },
+              "queryRef": "Statistical Validation.effect_size_metric",
+              "nativeQueryRef": "effect_size_metric"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Statistical Validation"
+                    }
+                  },
+                  "Property": "assumption_check"
+                }
+              },
+              "queryRef": "Statistical Validation.assumption_check",
+              "nativeQueryRef": "assumption_check"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Statistical Validation"
+                    }
+                  },
+                  "Property": "interpretation"
+                }
+              },
+              "queryRef": "Statistical Validation.interpretation",
+              "nativeQueryRef": "interpretation"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Statistical Validation"
+                  }
+                },
+                "Property": "hypothesis"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "grid": [
+        {
+          "properties": {
+            "rowPadding": {
+              "expr": {
+                "Literal": {
+                  "Value": "6D"
+                }
+              }
+            },
+            "gridVertical": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'fixedWidth'"
+                }
+              }
+            },
+            "defaultColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "115D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

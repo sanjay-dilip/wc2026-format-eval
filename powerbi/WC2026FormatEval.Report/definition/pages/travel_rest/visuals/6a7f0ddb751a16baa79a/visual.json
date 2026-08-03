@@ -1,0 +1,85 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "6a7f0ddb751a16baa79a",
+  "position": {
+    "x": 0,
+    "y": 338.08113671070981,
+    "z": 2,
+    "height": 327.3726844167054,
+    "width": 639.447579841976,
+    "tabOrder": 2
+  },
+  "visual": {
+    "visualType": "scatterChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Team Travel Rest"
+                    }
+                  },
+                  "Property": "team_id"
+                }
+              },
+              "queryRef": "Team Travel Rest.team_id",
+              "nativeQueryRef": "team_id",
+              "active": true
+            }
+          ]
+        },
+        "X": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Team Travel Rest"
+                        }
+                      },
+                      "Property": "distance_km"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Team Travel Rest.distance_km)",
+              "nativeQueryRef": "distance_km",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Team Travel Rest"
+                        }
+                      },
+                      "Property": "rest_days"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Team Travel Rest.rest_days)",
+              "nativeQueryRef": "rest_days"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

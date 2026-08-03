@@ -1,0 +1,121 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "59f8f8010e77363c1380",
+  "position": {
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "height": 338.08113671070981,
+    "width": 639.447579841976,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Team Travel Rest"
+                    }
+                  },
+                  "Property": "distance_km"
+                }
+              },
+              "queryRef": "Team Travel Rest.distance_km",
+              "nativeQueryRef": "distance_km1",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Team Travel Rest"
+                        }
+                      },
+                      "Property": "distance_km"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Team Travel Rest.distance_km)",
+              "nativeQueryRef": "distance_km"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Aggregation": {
+                "Expression": {
+                  "Column": {
+                    "Expression": {
+                      "SourceRef": {
+                        "Entity": "Team Travel Rest"
+                      }
+                    },
+                    "Property": "distance_km"
+                  }
+                },
+                "Function": 0
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    }
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "6da71be0888b56034660",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Team Travel Rest"
+                  }
+                },
+                "Property": "distance_km"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "460dbab9abb77dcb3560",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Team Travel Rest"
+              }
+            },
+            "Property": "distance_km"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

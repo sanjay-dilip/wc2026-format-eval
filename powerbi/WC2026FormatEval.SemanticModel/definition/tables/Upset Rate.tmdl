@@ -1,0 +1,96 @@
+/// One row per tournament — upset/draw rate among ranking-eligible decisive matches. Source: SHARED.UPSET_RATE.
+table 'Upset Rate'
+	lineageTag: d024a027-c1f1-4f7b-81ce-e7cde0d83f16
+
+	/// % of ranking-eligible decisive matches won by the lower-ranked team.
+	measure 'Upset Rate %' = AVERAGE('Upset Rate'[upset_rate_pct])
+		formatString: 0.0"%"
+		lineageTag: 24e60ee5-3aac-43e5-92bc-65bdaf433e32
+
+	/// % of ranking-eligible matches that ended level (FT+ET).
+	measure 'Draw Rate %' = AVERAGE('Upset Rate'[draw_rate_pct])
+		formatString: 0.0"%"
+		lineageTag: 7acbe699-f889-451d-848e-66d860ddcc3c
+
+	/// Matches where both teams have a non-NULL FIFA ranking.
+	measure 'Eligible Match Count' = SUM('Upset Rate'[eligible_match_count])
+		formatString: 0
+		lineageTag: b959f26d-8b05-49a4-bab3-0ab832ed75ce
+
+	/// Eligible matches excluding draws — the upset-rate denominator.
+	measure 'Decisive Match Count' = SUM('Upset Rate'[decisive_match_count])
+		formatString: 0
+		lineageTag: 208a1f3d-470c-4b91-b24d-6b9775c65797
+
+	column tournament_year
+		dataType: double
+		isKey
+		lineageTag: ff16bb11-3ee8-4dd2-bd9d-a8429d2b04af
+		summarizeBy: sum
+		sourceColumn: TOURNAMENT_YEAR
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column eligible_match_count
+		dataType: double
+		lineageTag: 9c952453-de49-4b15-a1a3-901dd9cd488c
+		summarizeBy: sum
+		sourceColumn: ELIGIBLE_MATCH_COUNT
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column draw_count
+		dataType: double
+		lineageTag: 2d668ba6-4ed5-4e81-8481-61af42f5d49a
+		summarizeBy: sum
+		sourceColumn: DRAW_COUNT
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column decisive_match_count
+		dataType: double
+		lineageTag: 14d796fd-e4bd-4e3b-826c-b258492b4a7d
+		summarizeBy: sum
+		sourceColumn: DECISIVE_MATCH_COUNT
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column upset_count
+		dataType: double
+		lineageTag: c7015f9f-ccff-4f58-b50f-226c1d631ee4
+		summarizeBy: sum
+		sourceColumn: UPSET_COUNT
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column upset_rate_pct
+		dataType: double
+		formatString: 0.0"%"
+		lineageTag: 2b773480-f3af-4f71-8e0e-3ccfc1a360c0
+		summarizeBy: average
+		sourceColumn: UPSET_RATE_PCT
+
+	column draw_rate_pct
+		dataType: double
+		formatString: 0.0"%"
+		lineageTag: 57c785e1-0cf2-41bd-9745-8f6ac375b005
+		summarizeBy: average
+		sourceColumn: DRAW_RATE_PCT
+
+	partition 'Upset Rate' = m
+		mode: import
+		source =
+				let
+				    Source = Snowflake.Databases(SnowflakeAccount, "COMPUTE_WH"),
+				    WC2026_Database = Source{[Name="WC2026",Kind="Database"]}[Data],
+				    SHARED_Schema = WC2026_Database{[Name="SHARED",Kind="Schema"]}[Data],
+				    View = SHARED_Schema{[Name="UPSET_RATE",Kind="View"]}[Data]
+				in
+				    View
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

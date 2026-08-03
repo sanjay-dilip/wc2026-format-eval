@@ -1,0 +1,8 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/1.0.0/schema.json",
+  "name": "travel_rest",
+  "displayName": "6. The Real Cost: Travel & Rest (2026 Only)",
+  "displayOption": "FitToPage",
+  "width": 1280,
+  "height": 720
+}
