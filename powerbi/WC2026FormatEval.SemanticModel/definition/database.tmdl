@@ -1,0 +1,4 @@
+/// World Cup 2026 format-expansion evaluation — semantic model over the SHARED schema's analytics marts
+database WC2026FormatEval
+	compatibilityLevel: 1567
+

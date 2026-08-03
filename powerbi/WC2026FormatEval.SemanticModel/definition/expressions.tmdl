@@ -1,0 +1,4 @@
+/// Snowflake account host. Placeholder in source control on purpose — set to your own account's <ACCOUNT_LOCATOR>.snowflakecomputing.com via Power Query > Manage Parameters before refreshing. Not a credential (auth is separate, via Desktop's credential manager), but this repo keeps the account identifier out of every committed file (see .env).
+expression SnowflakeAccount = "<SET LOCALLY — see .env SNOWFLAKE_ACCOUNT + '.snowflakecomputing.com'>" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 06a9f08a-d35e-4df8-9d97-c6ebb9d08873
+

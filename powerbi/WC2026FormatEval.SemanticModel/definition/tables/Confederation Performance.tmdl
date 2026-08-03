@@ -1,0 +1,60 @@
+/// One row per (tournament, confederation) — win rate and avg goal diff. Source: SHARED.CONFEDERATION_PERFORMANCE.
+table 'Confederation Performance'
+	lineageTag: 19cc467f-7fec-4ed0-be05-3d7bf6238f25
+
+	/// Mean win-equivalent (draw = 0.5) across all matches for the confederation's teams.
+	measure 'Win Rate' = AVERAGE('Confederation Performance'[win_rate])
+		formatString: 0.000
+		lineageTag: b40b4be3-ff50-42e2-ac11-a1e3d54fe8b9
+
+	/// Mean goals-for minus goals-against, per team-match, for the confederation.
+	measure 'Avg Goal Diff (Confederation)' = AVERAGE('Confederation Performance'[avg_goal_diff])
+		formatString: 0.00
+		lineageTag: 2b3b768b-6af1-4c33-8fd3-3cfecd79003c
+
+	/// Team-match rows for the confederation — watch for small-n confederations (e.g. OFC).
+	measure 'Matches Played (Confederation)' = SUM('Confederation Performance'[matches_played])
+		formatString: 0
+		lineageTag: 5ff273bb-63ac-47e4-9303-45f41d34b839
+
+	column tournament_year
+		dataType: int64
+		lineageTag: 741db156-9fc5-4537-a3bc-c4b264a43039
+		summarizeBy: none
+		sourceColumn: TOURNAMENT_YEAR
+
+	column confederation_name
+		dataType: string
+		lineageTag: 4bfd0d54-d3ab-4d8d-80bc-40401e2f8980
+		summarizeBy: none
+		sourceColumn: CONFEDERATION_NAME
+
+	column matches_played
+		dataType: int64
+		lineageTag: 5dab7db1-9dd1-4478-86a4-576ad1af8bcc
+		summarizeBy: sum
+		sourceColumn: MATCHES_PLAYED
+
+	column win_rate
+		dataType: double
+		lineageTag: 751850e2-5239-4470-b10b-8e9fe0e8f6de
+		summarizeBy: average
+		sourceColumn: WIN_RATE
+
+	column avg_goal_diff
+		dataType: double
+		lineageTag: b7a8012d-80b3-47b8-9cb3-7850191f4d4e
+		summarizeBy: average
+		sourceColumn: AVG_GOAL_DIFF
+
+	partition 'Confederation Performance' = m
+		mode: import
+		source =
+				let
+				    Source = Snowflake.Databases(SnowflakeAccount, "COMPUTE_WH"),
+				    WC2026_Database = Source{[Name="WC2026",Kind="Database"]}[Data],
+				    SHARED_Schema = WC2026_Database{[Name="SHARED",Kind="Schema"]}[Data],
+				    View = SHARED_Schema{[Name="CONFEDERATION_PERFORMANCE",Kind="View"]}[Data]
+				in
+				    View
+

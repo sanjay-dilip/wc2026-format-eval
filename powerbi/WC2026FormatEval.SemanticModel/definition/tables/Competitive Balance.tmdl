@@ -1,0 +1,63 @@
+/// One row per tournament — avg absolute goal diff and blowout rate. Source: SHARED.COMPETITIVE_BALANCE.
+table 'Competitive Balance'
+	lineageTag: 6bb92dbf-de00-42a0-afba-5695443e7454
+
+	/// Mean |home_score - away_score|, FT+ET combined.
+	measure 'Avg Abs Goal Diff' = AVERAGE('Competitive Balance'[avg_abs_goal_diff])
+		formatString: 0.00
+		lineageTag: feb9865a-53d0-489e-b013-27b14984486f
+
+	/// % of matches decided by a 3+ goal margin.
+	measure 'Blowout Rate %' = AVERAGE('Competitive Balance'[blowout_rate_pct])
+		formatString: 0.0"%"
+		lineageTag: 5071ade6-d7b2-45ec-af30-ed77643d7b67
+
+	column tournament_year
+		dataType: int64
+		isKey
+		lineageTag: cb75ee32-30d9-4d81-b2b3-7a9a349550ff
+		summarizeBy: none
+		sourceColumn: TOURNAMENT_YEAR
+
+	column team_count
+		dataType: int64
+		lineageTag: 0e2c043b-c71d-4f20-b199-e9e0e34512f9
+		summarizeBy: none
+		sourceColumn: TEAM_COUNT
+
+	column format_label
+		dataType: string
+		lineageTag: 190a0d05-96b5-4166-b7b2-c76415d3bafe
+		summarizeBy: none
+		sourceColumn: FORMAT_LABEL
+
+	column match_count
+		dataType: int64
+		lineageTag: aba7723f-66c3-44c6-be3e-ccd4530741a9
+		summarizeBy: sum
+		sourceColumn: MATCH_COUNT
+
+	column avg_abs_goal_diff
+		dataType: double
+		lineageTag: 2aafbe02-4cda-4da2-8eb9-397d275f464e
+		summarizeBy: average
+		sourceColumn: AVG_ABS_GOAL_DIFF
+
+	column blowout_rate_pct
+		dataType: double
+		formatString: 0.0"%"
+		lineageTag: 17b64bb6-1a25-4147-b2ca-16c5a0d602f0
+		summarizeBy: average
+		sourceColumn: BLOWOUT_RATE_PCT
+
+	partition 'Competitive Balance' = m
+		mode: import
+		source =
+				let
+				    Source = Snowflake.Databases(SnowflakeAccount, "COMPUTE_WH"),
+				    WC2026_Database = Source{[Name="WC2026",Kind="Database"]}[Data],
+				    SHARED_Schema = WC2026_Database{[Name="SHARED",Kind="Schema"]}[Data],
+				    View = SHARED_Schema{[Name="COMPETITIVE_BALANCE",Kind="View"]}[Data]
+				in
+				    View
+

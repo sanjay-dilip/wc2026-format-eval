@@ -1,0 +1,19 @@
+model WC2026FormatEval
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_ProTooling = ["MCP-PBIModeling"]
+
+ref table 'Tournament Format Comparison'
+ref table 'Competitive Balance'
+ref table 'Group Difficulty'
+ref table 'Upset Rate'
+ref table 'Confederation Performance'
+ref table 'Expected Vs Actual'
+ref table 'Team Travel Rest'
+ref table 'Statistical Validation'
+

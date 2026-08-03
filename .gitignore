@@ -17,3 +17,14 @@ CONTEXT.md
 # Approved Build 10 planning notes — kept locally for reference, not
 # tracked as a repo artifact (user decision, 2026-08-02).
 build_10_draft.txt
+
+# Power BI Desktop project (.pbip) local-only state — standard PBIP
+# .gitignore per Microsoft's own convention, local cache/user settings,
+# never meant to be shared.
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+
+# Compiled Power BI binary — kept as a local artifact alongside the .pbip
+# project, not committed (large, non-diffable binary; the .pbip is the
+# source of truth). See docs/decision_log.md, issue #41.
+powerbi/*.pbix
