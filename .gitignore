@@ -13,3 +13,7 @@ data/raw/international_results_full.csv
 # Local-only session state — helps new sessions pick up where the last one
 # left off; not meant to be a public/shared project artifact.
 CONTEXT.md
+
+# Approved Build 10 planning notes — kept locally for reference, not
+# tracked as a repo artifact (user decision, 2026-08-02).
+build_10_draft.txt
