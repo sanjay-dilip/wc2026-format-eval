@@ -13,7 +13,3 @@ data/raw/international_results_full.csv
 # Local-only session state — helps new sessions pick up where the last one
 # left off; not meant to be a public/shared project artifact.
 CONTEXT.md
-
-# Temporary: Build 10 draft under review, not yet approved. Remove this
-# line once the draft is finalized and should be committed for real.
-build_10_draft.txt
