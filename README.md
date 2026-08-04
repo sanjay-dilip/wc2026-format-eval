@@ -200,15 +200,11 @@ None of the above is a causal claim. Every statistical result uses
 
 **Screenshots**:
 
-```markdown
 ![Page 2: Competitive Balance annotation](images/page2_competitive_balance.png)
 ![Page 5: Expected-vs-Actual caveat banner](images/page5_caveat_banner.png)
 ![Page 8: Methodology & Confidence table](images/page8_methodology.png)
-```
 
-Placeholders only, images not yet captured. These three pages carry the
-most evidentiary weight on their own; once the demo video exists, stills
-pulled from it will replace this block.
+These three pages carry the most evidentiary weight on their own.
 
 ---
 
