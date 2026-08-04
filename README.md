@@ -196,16 +196,7 @@ None of the above is a causal claim. Every statistical result uses
 
 ## Screenshots / Demo
 
-No dashboard screenshots or demo video are committed to this repository
-yet. The 8-page Power BI report exists locally as a `.pbip` project
-(`powerbi/WC2026FormatEval.pbip`, tracked; the compiled `.pbix` binary is
-not). A demo script and recording are planned as a separate, standalone
-artifact outside this repo. Until screenshots are captured and committed,
-the report is reproducible by opening the `.pbip` project in Power BI
-Desktop against a live Snowflake account (see How to Run below), not yet
-verifiable from static images.
-
-**Demo video**: `[link pending, not yet recorded]`
+**Demo video**: https://youtu.be/WKtQ-sE5wI8
 
 **Screenshots**:
 
